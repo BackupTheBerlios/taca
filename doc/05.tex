@@ -49,12 +49,12 @@ Bàsicament, en iniciar-se el mòdul, es registra el nostre sistema de fitxers:
 \begin{codi}
 static int __init tacafs_init(void)
 \{
-   return register_filesystem(&tacafs_type);
+   [...] return register_filesystem(&tacafs_type);
 \}
 
 static void __exit tacafs_exit(void)
 \{
-   unregister_filesystem(&tacafs_type);
+   unregister_filesystem(&tacafs_type); [...]
 \}
 \end{codi}
 
@@ -89,14 +89,16 @@ int tacafs_f_readdir (struct file *file, void *dirent,
               de->d_parent->d_inode->i_ino, DT_DIR))
       return 0;
    [...]
-   num = num_clusters();      // CRIDA AL BACKEND
+   num = num_clusters();                    // CRIDA AL BACKEND
    [...]
-   llistar_clusters(llista);  // CRIDA AL BACKEND
-   while (llista != NULL) \{
-      if(filldir(dirent, llista->nom, strlen(llista->nom),
-                 file->f_pos++, DIR_INODE_NUMBER, DT_DIR))
-         return 0;
-      llista = llista->next;
+   if (llistar_clusters(llista, num) > 0) \{ // CRIDA AL BACKEND
+       num = 0;
+       while (llista != NULL) \{
+           if(filldir(dirent, llista->nom, strlen(llista->nom),
+	              file->f_pos++, INO(++num,INODE_CLUSTER), DT_DIR))
+                return 0;
+           llista = llista->next;
+       \}
    \}
    [...]
 \}
@@ -106,7 +108,8 @@ int tacafs_f_readdir (struct file *file, void *dirent,
 Donada una estructura dentry, que en el VFS de Linux és l'encarregade de
 representar la jerarquia de fitxers, i el inode pare al que pertany el dentry,
 crea un inode, li associa les operacions corresponents, el mode i finalment
-associa l'inode al dentry.
+associa l'inode al dentry (la major part d'aquesta tasca la duu a terme la
+funció \verb"tacafs_fill_dentry" i les que aquesta crida).
 
 Aquesta funció seria cridada en accedir al directori en qüestió.
 
@@ -114,16 +117,43 @@ Aquesta funció seria cridada en accedir al directori en qüestió.
 struct dentry *tacafs_i_lookup (struct inode *parent_inode,
                                 struct dentry *dentry)
 \{
-   [...]
-   if(!(file_inode = iget(parent_inode->i_sb, DIR_INODE_NUMBER)))
-      return ERR_PTR(-ENOMEM);
-   file_inode->i_mode = S_IFDIR|S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH;
-   // file_operations
-   file_inode->i_fop = &tacafs_dir_fops;
-   // inode_operations
-   file_inode->i_op = &tacafs_iops;
-   // afegir el inode al dentry
-   d_add(dentry, file_inode);
+    struct dentry *res = ERR_PTR(-ENOENT);
+    struct cluster_t cluster;
+    
+    if (!obtenir_cluster(dentry->d_name.name, &cluster))
+        goto out;
+    /*
+     * Hem de generar el inode per mostrar un cluster (el dentry)
+     * Per tant un directori
+     */
+    res = tacafs_fill_dentry(parent_inode->i_sb, dentry, INODE_CLUSTER,
+            MODE_DIR, &cluster, sizeof(cluster), &tacafs_cluster_iops,
+            &tacafs_cluster_dops, &tacafs_cluster_fops);
+out:
+    return res;
+\}
+
+struct dentry *tacafs_fill_dentry (struct super_block *sb,
+         struct dentry *dentry, int inobase, int mode, void *data,
+	 int datasize, struct inode_operations *iops, 
+	 struct dentry_operations *dops, struct file_operations *fops)
+\{
+    [...]
+    inode = tacafs_make_inode(sb, INO(name2ino,inobase), mode,
+	                      iops, fops);
+    if (!inode)
+	return ERR_PTR(-ENOMEM);
+
+    dentry->d_op = dops;
+
+    if (!tacafs_write_data(inode, data, datasize)) \{
+	iput(inode);
+	return ERR_PTR(-ENOMEM);
+    \}
+
+    d_add(dentry, inode);
+
+    return NULL;
 \}
 \end{codi}
 \end{description}
@@ -155,14 +185,24 @@ Aquesta interfície consta d'unes operacions necessàries per a generar
 l'estructura del sistema de fitxers:
 
 \begin{codi}
-int num_clusters();
-int llistar_clusters (struct cluster_t *llista);
+int num_clusters ();
+int llistar_clusters (struct cluster_t *llista, int maxnum);
+int obtenir_cluster (const char *nom, struct cluster_t *cluster);
+int cluster_valid (struct cluster_t *cluster);
+
 int num_nodes (struct cluster_t *cluster_id);
-int llistar_nodes (struct cluster_t *cluster_id,
-                   struct node_t *llista);
-int num_procs (struct cluster_t *cluster_id, struct node_t *node_id);
-int llistar_procs (struct cluster_t *cluster_id, struct node_t *node_id,
-                   struct proces_t *lista);
+int llistar_nodes (struct cluster_t *cluster_id, struct node_t *llista,
+                   int maxnum);
+int obtenir_node (struct cluster_t *cluster_id, const char *nom,
+                  struct node_t *node);
+int node_valid (struct node_t *node);
+
+int num_procs (struct node_t *node_id);
+int llistar_procs (struct node_t *node_id, struct proces_t *lista,
+                   int maxnum);
+int obtenir_proc (struct node_t *node_id, const char *nom,
+                  struct proces_t *proces);
+int proc_valid (struct proces_t *proces);
 \end{codi}
 
 I una sèrie de funcions per a dur a terme les funcionalitats que hem definit:
