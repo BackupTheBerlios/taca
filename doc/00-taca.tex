@@ -7,11 +7,25 @@
 \usepackage{graphicx}
 \usepackage[catalan]{babel}
 \usepackage{fancyhdr}
+\usepackage{indentfirst}
+\usepackage{verbatim}
+\usepackage{alltt}
+\usepackage[vcentering,dvips]{geometry}
+
+\geometry{papersize={170mm,240mm},total={124mm,185mm}}
 
 % Salto de línea tras título de secciones \paragraph
-\makeatletter % necesario para que reconozca a '@' como carácter normal
-\renewcommand{\paragraph}{\@startsection{paragraph}{4}{\z@}{-3.25ex \@plus -1ex \@minus -.2ex}{1.5ex \@plus .2ex}{\normalfont\normalsize\bfseries}}
-\makeatother % necesario para que restablezca '@' como carácter especial
+%\makeatletter % necesario para que reconozca a '@' como carácter normal
+%\renewcommand{\paragraph}{\@startsection{paragraph}{4}{\z@}{-3.25ex \@plus -1ex
+%\@minus -.2ex}{1.5ex \@plus .2ex}{\normalfont\normalsize\bfseries}}
+%\makeatother % necesario para que restablezca '@' como carácter especial
+
+% estil de citacio de codi
+\newenvironment{codi}
+	{\begin{quote} \begin{alltt}}
+	{\end{alltt}\end{quote}}
+
+\newcommand{\proc}{\texttt{/proc}\ }
 
 
 % Title Page
@@ -34,6 +48,8 @@
 
 
 \begin{document}
+
+\setcounter{tocdepth}{4}
 \maketitle
 
 \tableofcontents
@@ -59,7 +75,7 @@
 \input{03.tex}
 \input{04.tex}
 \input{05.tex}
-%\input{06.tex}
+\input{06.tex}
 
 \pagebreak 
 \addcontentsline{toc}{chapter}{Bibliografia}
