@@ -1,5 +1,3 @@
-\begin{document}
-
 \chapter{Software de clustering existent}
 
 \section{Necessitats generals}
@@ -60,7 +58,8 @@ remots)
 
 \subsubsection{OpenMosix}
 
-\paragraph{A nivell de cluster...}
+\begin{enumerate}
+\item A nivell de cluster...
 \begin{itemize}
 \item Consultar quantitat de nodes del cluster
 	Consultant el numero de subdirectoris de tipus NODE del directori cluster.
@@ -68,7 +67,7 @@ remots)
 	Mitjana ponderada de la carrega dels nodes que conte el cluster.
 \end{itemize}
 
-\paragraph{A nivell de node...}
+\item A nivell de node...
 \begin{itemize}
 \item Quantitat de CPU's d'un node
 	Consultant el fitxer /proc/hpc/nodes/\textless opMosix\_ID\textgreater/cpus
@@ -103,7 +102,7 @@ operacions
 anteriors.
 \end{itemize}
 
-\paragraph{A nivell de proces...}
+\item A nivell de proces...
 \begin{itemize}
 \item Moure processos d'un node a un altre
 	Fer un migrate del proces que volem moure al node on ha d'anar
@@ -140,13 +139,14 @@ cop que creem un proces??)
 \item Consultar resum de us de Memoria (...?)
 	idem que l'anterior
 \end{itemize}
+\end{enumerate} 
 
-\textbf{\textit{\underline{...? = volem mirar aquesta informacio de processos
-que son a altres maquines?}}} \\
+\textbf{\textit{\underline{
+...? = volem mirar aquesta informacio de processos que son a altres maquines?
+}}} \\
 
 L'escenari sera oferir un VFS nomes al node d'entrada, i els migrate... de
-OPMosix
-no treuen la informacio dels processos de /proc...
+OPMosix no treuen la informacio dels processos de /proc...
 
 
 \subsubsection{Beowulf}
@@ -186,7 +186,3 @@ d'investigació i/o recerca.
 ¿¿¿¿No s'ha trobat res????
 
 Comentar-ho???????????????
-
-
-
-\end{document}
