@@ -17,12 +17,14 @@ struct proces_t {
 };
 
 
-
+int num_clusters();
 int llistar_clusters (struct cluster_t *llista);
 
+int num_nodes(struct cluster_t *cluster_id);
 int llistar_nodes (struct cluster_t *cluster_id, struct node_t *llista);
 
-int liistar_procs (struct node_t *node_id, struct proces_t *lista);
+int num_procs(struct cluster_t *cluster_id, struct node_t *node_id);
+int llistar_procs (struct cluster_t *cluster_id, struct node_t *node_id, struct proces_t *lista);
 
 
 

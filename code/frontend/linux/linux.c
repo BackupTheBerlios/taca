@@ -25,6 +25,7 @@
 
 #define RKFS_MAGIC 0xabcd
 #define FILE_INODE_NUMBER 2
+#define DIR_INODE_NUMBER 3
 
 static struct super_block *rkfs_read_super(struct super_block *, void *, int);
 void rkfs_s_readinode( struct inode *inode );
@@ -124,34 +125,75 @@ int rkfs_s_statfs( struct super_block *sb, struct statfs *buf ) {
  * Inode Operations
  */
 
+/* Aquesta funcio genera el inode pel dentry que es vol mirar 
+ * El inode que es vol generar és "fill" del parent_inode
+ *
+ *
+ * TODO: comprovar que el directori on es vol entrar és correcte
+ */
+
 struct dentry *rkfs_i_lookup( struct inode *parent_inode, struct dentry *dentry ) {
   struct inode *file_inode;
-
-  if( parent_inode->i_ino == rkfs_root_inode->i_ino && strlen("hello.txt") == dentry->d_name.len && !strcmp(dentry->d_name.name, "hello.txt")) {
+  
+  printk( "rkfs: inode_operations.lookup called with dentry %s. size = %d\n", dentry->d_name.name, file_size );
+  
+  /* Hem de generar el inode per mostrar un clusters (el dentry) 
+   * Per tant un directori
+   * */
+  if( parent_inode->i_ino == rkfs_root_inode->i_ino) {
+	  
 	  // allocate an inode object
-	  if(!(file_inode = iget( parent_inode->i_sb, FILE_INODE_NUMBER )))
-		  return ERR_PTR(-ENOMEM);
-	  file_inode->i_size = file_size;
-	  file_inode->i_mode = S_IFREG|S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH;
-	  file_inode->i_fop = &rkfs_file_fops;
-	  //  add the inode to the dentry object
-	  d_add(dentry, file_inode);
-  }
-  if( parent_inode->i_ino == rkfs_root_inode->i_ino && strlen("tonto") == dentry->d_name.len && !strcmp(dentry->d_name.name, "tonto")) {
-	  // allocate an inode object
-	  if(!(file_inode = iget( parent_inode->i_sb, 3)))
+	  if(!(file_inode = iget( parent_inode->i_sb, DIR_INODE_NUMBER)))
 		  return ERR_PTR(-ENOMEM);
 	  //file_inode->i_size = file_size;
 	  file_inode->i_mode = S_IFDIR|S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH;
-	  file_inode->i_fop = &rkfs_file_fops;
+	  file_inode->i_fop = &rkfs_dir_fops;
 	  file_inode->i_op = &rkfs_iops;
 	  //  add the inode to the dentry object
 	  d_add(dentry, file_inode);
+	  
+	  printk(" lookup: inode per cluster %s generat\n", dentry->d_name.name);
   }
+
+  /* hem de generar el inode per mostrar el node */	
+  else if( dentry->d_parent->d_parent->d_inode->i_ino == rkfs_root_inode->i_ino) {
+
+
+	  //allocate an inode object
+	  if(!(file_inode = iget( parent_inode->i_sb, DIR_INODE_NUMBER)))
+		  return ERR_PTR(-ENOMEM);
+	  file_inode->i_mode = S_IFDIR|S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH;
+	  file_inode->i_fop = &rkfs_dir_fops;
+	  file_inode->i_op = &rkfs_iops;
+	  //add the inode to the dentry object
+	  d_add(dentry, file_inode);
+
+	  printk(" lookup: inode per node %s generat\n", dentry->d_name.name);
+
+
+  }
+	  
+  // Hem de generar l'inode per mostrar el proces
+  else if( dentry->d_parent->d_parent->d_parent->d_inode->i_ino == rkfs_root_inode->i_ino) {
+
+	  //allocate an inode object
+	  if(!(file_inode = iget( parent_inode->i_sb, FILE_INODE_NUMBER)))
+			  return ERR_PTR(-ENOMEM);
+	  file_inode->i_size = file_size;
+	  file_inode->i_mode = S_IFREG|S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH;
+	  file_inode->i_fop = &rkfs_file_fops;
+	  //add the inode to the dentry object
+	  d_add(dentry, file_inode);
+
+	  printk(" lookup: inode per process %s generat\n", dentry->d_name.name);
+
+
+  }
+  
   else {
       return ERR_PTR(-ENOENT);
   }
-  printk( "rkfs: inode_operations.lookup called with dentry %s. size = %d\n", dentry->d_name.name, file_size );
+  
   return NULL;
 }
 
@@ -210,27 +252,125 @@ int rkfs_f_readdir( struct file *file, void *dirent, filldir_t filldir ) {
     if(de->d_inode->i_ino == rkfs_root_inode->i_ino) // Estem a l'arrel 
     {
 	struct cluster_t *llista;
-	llista = (struct cluster_t *)kmalloc(sizeof(struct cluster_t) ,GFP_KERNEL);	
+	int num;
+	
+	num = num_clusters();
+	llista = (struct cluster_t *)kmalloc(sizeof(struct cluster_t)*num ,GFP_KERNEL);	
 	llistar_clusters(llista);
 
-    	printk( "rkfs: file_operations.readdir called caca\n" );
+    	printk( " readdir: Creant clusters\n" );
 	while (llista != NULL) {	
-		if(filldir(dirent, llista->nom, strlen(llista->nom), file->f_pos++, 3, DT_DIR ))
+		if(filldir(dirent, llista->nom, strlen(llista->nom), file->f_pos++, DIR_INODE_NUMBER, DT_DIR ))
 	         	return 0;
 		llista = llista->next;
-    	printk( "rkfs: file_operations.readdir called bucle\n" );
 	} 
-    printk( "rkfs: file_operations.readdir calledi final\n" );
+	printk(" readdir: Directoris per clusters creats\n");
+	kfree(llista);
 		
     }
-//	    if(filldir(dirent, "hello.txt", 9, file->f_pos++, FILE_INODE_NUMBER, DT_REG ))
-	    
-  //  if(filldir(dirent, "hello.txt", 9, file->f_pos++, FILE_INODE_NUMBER, DT_REG ))
-    //    return 0;
-    /* Mostrar subdirs */
-//    if(filldir(dirent, "tonto", 5, file->f_pos++, 3, DT_DIR ))
-//        return 0;
     
+    
+    else if(de->d_parent->d_inode->i_ino == rkfs_root_inode->i_ino) // Estem a un cluster 
+    {
+	struct cluster_t *llista;
+	struct node_t *llista1;
+	int num;
+	int i=0;
+	
+	printk(" readdir: Llistant nodes del cluster %s\n", de->d_name.name);
+
+	
+	// Obtenim tots els clusters i busquem en quin estem
+	num = num_clusters();
+	llista = (struct cluster_t *)kmalloc(sizeof(struct cluster_t)*num ,GFP_KERNEL);	
+	llistar_clusters(llista);
+	
+	while (llista != NULL && i==0) {	
+		
+		printk(" readdir: Busquem el cluster\n");
+		
+		if (!strcmp(de->d_name.name, llista->nom)) i=1;
+		else llista = llista->next;
+	} 
+
+	// Llistem tots els nodes del cluster
+	num = num_nodes(llista);	
+	llista1 = (struct node_t *)kmalloc(sizeof(struct node_t)*num ,GFP_KERNEL);
+	llistar_nodes(llista,llista1);
+
+	while (llista1 != NULL) {
+		
+		printk(" readdir: Creem els directoris pels nodes\n");
+		
+		if(filldir(dirent, llista1->nom, strlen(llista1->nom), file->f_pos++, DIR_INODE_NUMBER, DT_DIR ))
+			return 0;
+		llista1 = llista1->next;
+	}
+    	
+	printk(" readdir: Directoris per nodes creats\n");
+    	
+	
+	kfree(llista);
+	kfree(llista1);
+	}
+    
+    else if(de->d_parent->d_parent->d_inode->i_ino == rkfs_root_inode->i_ino) // Estem a un node 
+    {
+	struct cluster_t *llista;
+	struct node_t *llista1;
+	struct proces_t *llista2;
+	int num;
+	int i=0;
+	
+	printk(" readdir: Llistant procs del node %s\n", de->d_name.name);
+
+	
+	// Obtenim tots els clusters i busquem en quin estem
+	num = num_clusters();
+	llista = (struct cluster_t *)kmalloc(sizeof(struct cluster_t)*num ,GFP_KERNEL);	
+	llistar_clusters(llista);
+	
+	while (llista != NULL && i==0) {	
+		
+		printk(" readdir: Busquem el cluster\n");
+		
+		if (!strcmp(de->d_parent->d_name.name, llista->nom)) i=1;
+		else llista = llista->next;
+	} 
+
+	// Obtenim  tots els nodes del cluster i busquem en quin estem
+	i = 0; 
+	num = num_nodes(llista);	
+	llista1 = (struct node_t *)kmalloc(sizeof(struct node_t)*num ,GFP_KERNEL);
+	llistar_nodes(llista,llista1);
+
+	while (llista1 != NULL && i==0) {
+		
+		printk(" readdir: Busquem el node\n");
+		
+		if (!strcmp(de->d_name.name, llista1->nom)) i=1;
+		else llista1 = llista1->next;
+	}
+    	
+	
+	// LListem els processos del cluster
+	num = num_procs(llista,llista1);	
+	llista2 = (struct proces_t *)kmalloc(sizeof(struct proces_t)*num ,GFP_KERNEL);
+	llistar_procs(llista,llista1,llista2);
+
+	while (llista2 != NULL) {
+		if(filldir(dirent, llista2->nom, strlen(llista2->nom), file->f_pos++, FILE_INODE_NUMBER, DT_REG ))
+			return 0;
+		llista2 = llista2->next;
+	}
+	
+	printk(" readdir: Fitxers per processos creats\n");
+    	
+	
+	kfree(llista);
+	kfree(llista1);
+	kfree(llista2);	
+    }
     
     return 1;
 }
