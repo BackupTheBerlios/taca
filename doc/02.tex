@@ -167,7 +167,62 @@ exemple podria ser un translator que es comportés com un directori quan fós
 accedit per \texttt{cd} o \texttt{ls} però que al mateix temps es comportés com
 un fitxer al ser accedit per \texttt{cat}.
 
-\subsection{/proc de Linux vs. VFS de Linux}
+\subsection{/proc de Linux}
+\subsubsection {Introducció a \proc}
+Linux manté una abstracció de sistema de fitxers virtual anomenada /proc. En diem abstracció, perquè realment no és ben bé un sistema de fitxers implementat
+sobre VFS com ho poden ser: Ext2, Ext3, ReiserFS, Minix...
+A més /proc en podem dir que és un pseudo-sistema de fitxers, ja que en realitat cap dels fitxers o directoris que s'hi visualitzen existeixen realment.
+
+/proc és realment un mirall on s'hi veuen reflectides algunes de les esctructures del nucli del sistema operatiu, i per mitjà del qual podem controlar alguns paràmetres de seguretat tan fàcilment com resulta interectuar amb sistema de fitxers real.
+
+
+\subsubsection {Més sobre \proc}
+
+/proc está disponible en el sistema operatiu Linux quan el nucli es compila amb la opció CONFIG_PROC_FS=Y. També haurem de seleccionar la opció CONFIG_SYSCTL=Y per a poder modificar el valor de determinats paràmetres.
+La majoria de distribucions inclouen nuclis compilats amb aquesta opció i en general és aconsellable seleccionar-la en el moment de recompilar el nucli.
+
+\subsubsection {Com es monta?}
+
+El pseudo-sistema de fitxers /proc es pot muntar automàtic en el moment d'iniciar el sistema indicant-ho a /etc/fstab. En el cas que sigui necessari muntar-lo manualment utilitzaríem la següent comanda:
+
+	mount -t proc proc /proc 
+
+És aconsellable que /proc sigui muntat automàticament al sistema.
+En cas de no disposar del suport per a /proc, alguns programes d'administració del sistema (com per exemple el que nosaltres estem desenvolupant) no funcionaran ja que no podrem modificar/accedir en temps d'execució a alguns paràmetres del nucli del sistema operatiu (molts d'ell de seguretat).
+
+\subsubsection {Què conté /proc?}
+Dins del directori /proc hi trobem dos tipus bàsics d'informació.
+En primer lloc, per a cada procés actiu existeix un directori.
+Dins del directori de cada procés hi ha diversos fitxers així com un subdirectori d'informació específica del procés (paràmetres passats per línia de comandes, enllaç al directori actual del procés, variables d'entorn dins del context del procés, els descriptors de fitxers oberts pel procés, mapa i informació sobre la utilització de la memòria...).
+
+Adicionalment, existeixen una sèrie de directoris amb informació sobre els diferents mòduls del sistema operatiu. O tal i com veurem en aquest treball, OpenMosix proporciona un subdirectori (hpc) dins de /proc en el qual hi trobarem alguns fitxers que ens seran de gran utilitat per a implementar les funcionalitats que defineixen el nostre projecte.
+
+Al fitxer proc.txt (disponible al directori de documentació de sistemes de fitxers del codi font del nucli de Linux) hi ha informació detallada de tot el que podem trobar dins de /proc.
+Un altre document d'interès és ip-sysctl.txt, disponible al directori de documentació sobre treball en xarxa.
+
+No tots els paràmetres existents en /proc són modificables directament per l'usuari. De fet, la majoria són valors de només lectura i altres són molt millor controlar-los per mitjà del nucli amb la utilització de les divers funcions i eienes existents al sistema.
+
+
+\subsubsections {Exemples de directoris}
+/proc/sys/net/ipv4 
+
+Dins d'aquest directori tenim disponibles una sèrie de fitxers amb els valors i paràmetres del protocol IP versió 4. Es tracta d'una sèrie de valors directament emprats pel nucli del sistema operatiu en les comunicacions TCP/IP basades en el protocol IP versió 4.
+
+Per determinar el valor d'algun d'aquests paràmetres, l'única cosa que hem de fer és mirar el seu contingut. Per exemple:
+
+$cat /proc/sys/net/ipv4/icmp_echo_ignore_all 
+0 
+
+Ens mostra que actualment el sistema operatiu té assignat el valor 0 (desactivat) al paràmetre ICMP_ECHO_IGNORE_ALL.
+
+L'usuari ROOT del sistema té el privilegi de modificar el valor d'aquesta variable:
+
+# echo 1 > /proc/sys/net/ipv4/icmp_echo_ignore_all 
+# cat /proc/sys/net/ipv4/icmp_echo_ignore_all 
+1 
+
+Més endavant, als apartats d'implementació amb OpenMosix, veurem com també podríem editar paràmetres de fitxers del subdirectori que ofereix per a realitzar algunes de les funcions que ens proporciona (ex: Bloquejar un node per rebre processos remots)
+
 
 \subsection{...Altres abstraccions en SFs...}
 
