@@ -100,7 +100,8 @@ exemple, OpenMosix (tot i que aquest últim és totalment transparent a l'usuari).
 De totes maneres,
 
 
-\item \textbf{...Altre soft de clustering...}
+\item \textbf{Altre soft de clustering:}
+Tot i buscar per Internet la existència d'altre software de clustering, no hem trobat res excepte distribucions basades en el software que ja hem comentat.
 \end{itemize}
 
 
@@ -112,8 +113,7 @@ trobar alguns projectes d'investigació que fan referència a la construcció de
 sistemes de clustering sobre microkernels. Hem trobat dos exemples:
 
 Hurricane Operating System, clúster experimental orientat a la investigació i
-la recerca. Paper ftp://ftp.cs.toronto.edu/pub/paral·lel/Tumoral \_ Untau \_
-Caboriege \_ USENIX92.ps.Z
+la recerca \cite{Microkernel-HOS}.
 
 CHORUS/Fusion per SCO Sopen Menystens Software is una implementació
 multi-servidor per SCO UNIX. Aquest entend SCO Unix amb funcionalitats de
@@ -125,14 +125,14 @@ temps real i clustering.
 \begin{itemize}
 \item {\textbf{Solaris:}}
 Hem trobat exemples de clústers de computació construïts amb aquest Sistema
-Operatiu, per exemple, el SciClone Cluster Project. El clúster està format
-exclusivament per màquines Sun però no donen moltes característiques del sistema
-operatiu, ni tampoc si han tingut que desenvolupar un afegit per dona suport per
-clustering.  (http://www.compsci.wm.edu/SciClone/introduction/index.html).
+Operatiu, per exemple, el SciClone Cluster Project \cite{AltresSO-SciCLone}.
+El clúster està format exclusivament per màquines Sun però no donen moltes
+característiques del sistema operatiu, ni tampoc si han tingut que desenvolupar
+un afegit per dona suport per clustering.
 
 \item {\textbf{MacOSX:}}
 Utilitzant la bibloteca de processament carbonlib més un software de clustering
-anomenat pooch (http://daugerresearch.com/pooch/) és pot crear un cluster amb
+anomenat pooch \cite{AltresSO-MacOS} es pot crear un cluster amb
 aquest sistema operatiu. Com passa a Beowulf per Linux, aquest sistema de
 clustering està basat en l'ús de biblioteques de paral.leliització i per tant
 els programes s'haurán d'escriure penssant que s'executen en un cluster no és
@@ -200,7 +200,9 @@ El pseudo-sistema de fitxers /proc es pot muntar automàtic en el moment
 d'iniciar el sistema indicant-ho a /etc/fstab. En el cas que sigui necessari
 muntar-lo manualment utilitzaríem la següent comanda:
 
-	mount -t proc proc /proc 
+\begin{quotation}
+\verb"mount -t proc proc /proc"
+\end{quotation} 
 
 És aconsellable que /proc sigui muntat automàticament al sistema.
 En cas de no disposar del suport per a /proc, alguns programes d'administració
@@ -247,11 +249,9 @@ Per determinar el valor d'algun d'aquests paràmetres, l'única cosa que hem de
 fer és mirar el seu contingut. Per exemple:
 
 \begin{quotation}
-%\begin{verbatim}
-\$ cat /proc/sys/net/ipv4/icmp\_echo\_ignore\_all 
-\\*
-0
-%\end{verbatim} 
+\verb"$ cat /proc/sys/net/ipv4/icmp_echo_ignore_all"
+
+\verb"0"
 \end{quotation} 
 
 Ens mostra que actualment el sistema operatiu té assignat el valor 0
@@ -261,13 +261,11 @@ L'usuari \textit{root} del sistema té el privilegi de modificar el valor
 d'aquesta variable:
 
 \begin{quotation}
-	\texttt{
-		\# echo 1 \textgreater \ /proc/sys/net/ipv4/icmp\_echo\_ignore\_all
-		\\*
-		\# cat /proc/sys/net/ipv4/icmp\_echo\_ignore\_all 
-		\\*
-		1
-	}
+\verb"# echo 1 > /proc/sys/net/ipv4/icmp_echo_ignore_all"
+\\
+\verb"# cat /proc/sys/net/ipv4/icmp_echo_ignore_all"
+
+\verb"1"
 \end{quotation} 
 
 Més endavant, als apartats d'implementació amb OpenMosix, veurem com també
@@ -276,5 +274,8 @@ realitzar algunes de les funcions que ens proporciona (ex: Bloquejar un node per
 rebre processos remots)
 
 
-\subsection{...Altres abstraccions en SFs...}
+\subsection{Altres abstraccions en SFs}
 
+Com que en Linux tots els sistemes de fitxers, virtuals i no virtuals, estan basats en el VFS, no hem trobat res en aquest sistema.
+
+Emperò tampoc hem trobat res en d'altres sistemes, excepte els translators que ja hem comentat per a GNU/Hurd, de manera que no hem aconseguit trobar res per encabir en aquesta secció.
