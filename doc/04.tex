@@ -1,5 +1,20 @@
 \chapter {Estudis i propostes de disseny}
 
+\section {Disseny esquemàtic del sistema}
+Disseny a tres capes:
+	Frontend	VFS
+	Adaptació	(definició d'una interfície)
+	Backend		Clustering (implementació de la interfície depenent del sistema de
+clustering)
+
+\subsection{Frontend}
+
+Implementació de la jerarquia generica d'administració a través de les funcions
+que proporciona l'abstracció
+(sistema de fitxers virtual) del sistema sobre el que s'executa.
+
+
+
 \section{Esquema del sistema de fitxers}
 
 Com que volem crear una abstracció (genèrica) a través del sistema de fitxers, a
@@ -13,21 +28,28 @@ Entendrem com a '/' (arrel) l'inici de la nostra jerarquia d'administració.
 /
 |-- <IDCluster>
 |   |-- admin
-|   |   |-- 
+|   |   `-- ... 
 |   |-- self
-|   |   |--
 |   |-- <IDNode>
 |   |   |-- admin
-|   |   |   |--
+|   |   |   `-- ...
 |   |   `-- <IDProces>
-|   |       |-- 
+|   |       |-- from 
+|   |       `-- 
 \end{verbatim} 
 
 
 \section{Solució cutre}
 Explicació + figura \ref{fig:esquema-utilcl} .
 
-\begin{figure}
+En aquest disseny es tracta d'utilitzar des del mòdul TACA les comandes que
+ofereix el software de clustering. 
+Per exemple, quan es vol migrar un proces, es a dir, es vol moure un fitxer que
+representa el proces en el sistema de fitxers que ofereix TACA, d'un node a un
+altre, el que faria el software del nostre mòdul seria utilitzar la comanda
+"migrate" de les OpenMosix Tools (utilitats clustering).
+
+\begin{figure}[h]
    \centering
    \includegraphics[scale=0.4]{esquema-utilcl.eps}
    \caption{Esquema cutre}
@@ -38,7 +60,23 @@ Explicació + figura \ref{fig:esquema-utilcl} .
 \section{Solució guay}
 Explicació + figura \ref{fig:esquema-supcl}.
 
-\begin{figure}
+En aquest disseny es tracta d'utilitzar des del mòdul TACA les funcions que
+ofereix la llibreria del cluster (suport clustering).
+A l'exemple d'abans, en el qual volíem migrar un procés, el nostre mòdul
+utilitzaria les funcions específiques per aquesta tasca que trobem a la pròpia
+API que ens ofereix OpenMosix. Es a dir, faria servir les funcions que utilitzen
+les OpenMosix Tools.
+
+Aquest disseny, respecte l'anterior, aporta independència respecte les OpenMosix
+Tools i eficiència ja que no cal que cada cop que volem fer alguna operació
+haguem de crear un procés que executi una comanda de les utilitats de
+clustering.
+
+Per contra implica entendre les llibreries de OpenMosix i realitzar-ne una
+implementació, tot i que al tenir el codi font podem seguir els passos que fan
+servir aquestes llibreries.
+
+\begin{figure}[h]
    \centering
    \includegraphics[scale=0.4]{esquema-supcl.eps}
    \caption{Esquema guay}
@@ -46,31 +84,17 @@ Explicació + figura \ref{fig:esquema-supcl}.
 \end{figure}
 
 \section{Solució super-guay}
-???
+En aquest disseny es tracta d'interectuar directament amb el nucli mitjançant
+elsistema de fitxers virtual /proc.
+Seguint amb l'exemple de migració de procés, en aquest cas es tractaria
+d'escriure directament les dades necessàries al fitxer corresponent del
+directori /proc.En aquest cas escrivint el identificador de node al fitxer
+"/proc/[PID]/goto" aconseguiríem migrar el procés de pid=PID al node desitjat. 
+
+Aquest disseny, respecte l'anterior, aporta simplicitat i independència respecte
+les utilitats que ofereix el cluster i les llibreries. Però per contra s'hauria
+de reescriure molt codi per exemple pel control d'errors, permisos, etc. que ja
+estan implementats a les llibreries del software de clustering.
 
 \section{...}
-???????
-
-
-Disseny esquemàtic del sistema
-==============================
-
-Disseny a tres capes:
-
-	Frontend	VFS
-	Adaptació	(definició d'una interfície)
-	Backend		Clustering (implementació de la interfície depenent del sistema de
-clustering)
-
-Definició d'una jerarquia:
-
-
-Frontend
---------
-
-Implementació de la jerarquia generica d'administració a través de les funcions
-que proporciona l'abstracció
-(sistema de fitxers virtual) del sistema sobre el que s'executa.
-
-- Jerarquia
 

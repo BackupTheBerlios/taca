@@ -1,103 +1,191 @@
-\documentclass{letter}
-
-%%%%%%%%%% Start TeXmacs macros
-\catcode`\à=\active \defà{\`a} \catcode`\À=\active \defÀ{\`A}
-\catcode`\á=\active \defá{\'a} \catcode`\Á=\active \defÁ{\'A}
-\catcode`\ä=\active \defä{\"a} \catcode`\Ä=\active \defÄ{\"A}
-\catcode`\â=\active \defâ{\^a} \catcode`\Â=\active \defÂ{\^A}
-\catcode`\å=\active \defå{{\aa}} \catcode`\Å=\active \defÅ{{\AA}}
-\catcode`\ç=\active \defç{\c{c}} \catcode`\Ç=\active \defÇ{\c{C}}
-\catcode`\è=\active \defè{\`e} \catcode`\È=\active \defÈ{\`E}
-\catcode`\é=\active \defé{\'e} \catcode`\É=\active \defÉ{\'E}
-\catcode`\ë=\active \defë{\"e} \catcode`\Ë=\active \defË{\"E}
-\catcode`\ê=\active \defê{\^e} \catcode`\Ê=\active \defÊ{\^E}
-\catcode`\ì=\active \defì{\`{\i}} \catcode`\Ì=\active \defÌ{\`{\I}}
-\catcode`\í=\active \defí{\'{\i}} \catcode`\Í=\active \defÍ{\'{\I}}
-\catcode`\ï=\active \defï{\"{\i}} \catcode`\Ï=\active \defÏ{\"{\I}}
-\catcode`\î=\active \defî{\^{\i}} \catcode`\Î=\active \defÎ{\^{\I}}
-\catcode`\ò=\active \defò{\`o} \catcode`\Ò=\active \defÒ{\`O}
-\catcode`\ó=\active \defó{\'o} \catcode`\Ó=\active \defÓ{\'O}
-\catcode`\ö=\active \defö{\"o} \catcode`\Ö=\active \defÖ{\"O}
-\catcode`\ô=\active \defô{\^o} \catcode`\Ô=\active \defÔ{\^O}
-\catcode`\ù=\active \defù{\`u} \catcode`\Ù=\active \defÙ{\`U}
-\catcode`\ú=\active \defú{\'u} \catcode`\Ú=\active \defÚ{\'U}
-\catcode`\ü=\active \defü{\"u} \catcode`\Ü=\active \defÜ{\"U}
-\catcode`\û=\active \defû{\^u} \catcode`\Û=\active \defÛ{\^U}
-\catcode`\ý=\active \defý{\'y} \catcode`\Ý=\active \defÝ{\'Y}
-\catcode`\ÿ=\active \defÿ{\"y} \catcode`\˜=\active \def˜{\"Y}
-\catcode`\½=\active \def½{!`}
-\catcode`\¾=\active \def¾{?`}
-\catcode`\ß=\active \defß{{\ss}}
-\newcommand{\chapter}[1]{\medskip\bigskip
-
-\noindent\textbf{\begin{center}\huge #1\end{center}}\vspace{-3ex}
-
-\noindent}
-\newcommand{\section}[1]{\medskip\bigskip
-
-\noindent\textbf{\LARGE #1}\vspace{-3ex}
-
-\noindent}
-\newcommand{\subsection}[1]{\medskip\bigskip
-
-\noindent\textbf{\Large #1}\vspace{-3ex}
-
-\noindent}
-\newcommand{\subsubsection}[1]{\medskip\bigskip
-
-\noindent\textbf{\large #1}\vspace{-3ex}
-
-\noindent}
-\newcommand{\paragraph}[1]{\smallskip
-
-\noindent\textbf{#1} }
-%%%%%%%%%% End TeXmacs macros
-
 \begin{document}
 
 \chapter{Software de clustering existent}
 
-\section{Necessitats generals} (què ens ha d'oferir la capa inferior) (poder
-migrar processos, poder veure on són, ...) (què nosaltres VOLEM poder fer)
+\section{Necessitats generals}
+(què ens ha d'oferir la capa inferior) \\
+(poder migrar processos, poder veure on són, ...) \\
+(què nosaltres VOLEM poder fer)
 
-\section{Què ens ofereixen els sistemes} (què proporciona a una capa superior)
-(si ja proporciona una abstracció semblant a la que volem...) (què nosaltres
-PODEM fer)
+\subsection {A nivell de cluster...}
+\begin{itemize}
+\item Consultar quantitat de nodes del cluster
+\item Consultar carrega total del cluster
+\end{itemize}
 
+\subsection {A nivell de node...}
+\begin{itemize}
+\item Quantitat de CPU's d'un node
+\item Consultar carrega del node
+\item Consultar estat de memoria
+\item Bloquejar l'arribada de nous processos remots
+\item Bloquejar la migracio de processos locals
+\item Activar/Desactivar la migració automatica de processos
+\item Demanar que els processos que ha creat un node i han migrat, tornin  a
+aquest node (come back home)
+\item Expulsar els "processos convidats" a casa
+\item Saber quin identificador te un node
+\item Modificar/Consultar la velocitat d'un node
+\item Consultar informacio de processos (resum de l'estat de processos locals, i
+remots)
+\item Consultar resum de l'estat del node
+\end{itemize}
+
+\subsection {A nivell de proces...}
+\begin{itemize}
+\item Moure processos d'un node a un altre
+\item Bloquejar un proces en un node concret (/proc.....lock)
+\item Crear un nou proces en una maquina (crear un fitxer)
+\item Matar un proces (esborrar un fitxer)
+\item Copiar un proces??
+\item Modificar/veure memoria del proces (/proc....mem)
+\item Consultar la linia de comandes amb la que s'ha ex/proc....cmdline)
+\item Consultar estat del proces (/proc....status)
+\item Consultar quants cops s'ha migrat el proces
+\item Consultar on s'esta computant actualment
+\item Consultar quin node el va crear
+\item Saber l'identificador de proces (ID global)
+\item Saber l'identificador local d'un proces (ex: PID)
+\item Consultar resum de us de CPU
+\item Consultar resum de us de Memoria
+\end{itemize}
+
+
+\section{Què ens ofereixen els sistemes}
+(què proporciona a una capa superior) \\
+(si ja proporciona una abstracció semblant a la que volem...) \\
+(què nosaltres PODEM fer)
+                
 \subsection{Linux}
 
 \subsubsection{OpenMosix}
 
-\paragraph{\subsubsection{Beowulf} {\nocite{Beowulf-MiniHowto}} Tal com s'ha
-explicat anteriorment, Beowulf és una arquitectura i no un paquet de software,
-de manera que hi ha diverses eines o distribucions que permeten contruïr
-aquesta arquitectura:}{\begin{itemize}
-  \item Cluster Management Utility (CMU) de Compaq
-  
-  \item Projecte OSCAR (Open Source Cluster Application Resources)
-  
-  \item ROCKS Clustering Toolkit.
-  
-  \item Patagonia Cluster Project
-  
-  \item SMILE Cluster Management System (SCMS) i les seves eines per a Beowulf
-  
-  \item Projecte SCore Cluster System Software (Score)
-  
-  \item Software ALINKA Linux Clustering
-\end{itemize}}{Degut a la gran varietat d'eines d'administració i de sistemes
-de comunicació que utilitzen els programadors (PVM, MPI, etc.) en aquesta
-arquitectura (precisament per ser una arquitectura i no un software concret),
-no ens ha estat possible definir les característiques concretes de Beowulf i,
-per tant, en la resta del treball ens basarem en les experiències concretes
-d'OpenMosix i la teoria sobre el que ofereix un sistema de computació
-distribuïda.}
+\paragraph{A nivell de cluster...}
+\begin{itemize}
+\item Consultar quantitat de nodes del cluster
+	Consultant el numero de subdirectoris de tipus NODE del directori cluster.
+\item Consultar carrega total del cluster
+	Mitjana ponderada de la carrega dels nodes que conte el cluster.
+\end{itemize}
+
+\paragraph{A nivell de node...}
+\begin{itemize}
+\item Quantitat de CPU's d'un node
+	Consultant el fitxer /proc/hpc/nodes/\textless opMosix\_ID\textgreater/cpus
+\item Consultar carrega del node
+	Consultant el fitxer /proc/hpc/nodes/\textless opMosix\_ID\textgreater/load
+\item Consultar estat de memoria
+	Consultant el fitxer /proc/hpc/nodes/\textless opMosix\_ID\textgreater/mem
+\item Bloquejar l'arribada de nous processos remots (per altres nodes que no
+sigui el local??muntar /proc..admin dels altres??)
+	Consultant el fitxer /proc/hpc/admin/block
+\item Bloquejar la migracio de processos locals
+	Bloquejar cada procés del node (mirar següent secció)
+\item Activar/Desactivar la migració automatica de processos
+	Modificar el fitxer /proc/hpc/admin/stay
+\item Demanar que els processos que ha creat un node i han migrat, tornin  a
+aquest node (come back home)
+	Modificar el fitxer /proc/hpc/admin/bring (com???)
+\item Expulsar els "processos convidats" a casa
+	Modificar el fitxer /proc/hpc/admin/expel
+\item Saber quin identificador te un node
+	Consultar el fitxer /proc/hpc/admin/mospe (o mirar el nom del directori del
+node)
+\item Modificar/Consultar la velocitat d'un node
+	Consultar el fitxer /proc/hpc/admin/speed
+\item Consultar informacio de processos (resum de l'estat de processos locals, i
+remots)
+	Generar un resum consultant la informació de cada procés del node amb les
+operacions
+	de consulta de informació de proces (mirar següent secció)
+\item Consultar resum de l'estat del node
+	Generar un resum amb la informació sobre el node descrita a les funcionalitats
+anteriors.
+\end{itemize}
+
+\paragraph{A nivell de proces...}
+\begin{itemize}
+\item Moure processos d'un node a un altre
+	Fer un migrate del proces que volem moure al node on ha d'anar
+	=> Esborrar els fitxers relatius al proces del node origen
+	=> Generar els fitxers relatius al proces al node desti
+\item Bloquejar un proces en un node concret (/proc.....lock)
+	Modificar el fitxer /proc/[PID]/lock
+\item Crear un nou proces en una maquina (crear un fitxer)
+	Posar en execucio el proces al node on volem que s'executi
+	=> Generar els fitxers relatius al proces en aquest node.
+\item Matar un proces (esborrar un fitxer)
+	Fer un "kill" del proces
+	=> Esborrar els fitxers relatius al proces al node on s'esta executant.
+\item Copiar un proces??
+\item Modificar/veure memoria del proces (/proc....mem) (...?)
+	Consultar el fitxer /proc/[PID]/mem
+\item Consultar la linia de comandes amb la que s'ha ex/proc....cmdline) (...?)
+	Consultar el fitxer /proc/[PID]/cmdline
+\item Consultar estat del proces (/proc....status) (...?)
+	Consultar el fitxer /proc/[PID]/status
+\item Consultar quants cops s'ha migrat el proces (...?)
+	Consultar el fitxer /proc/[PID]/nmigs
+\item Consultar on s'esta computant actualment
+	Consultar el fitxer /proc/[PID]/where (o mirar el directori pare)
+\item Consultar quin node el va crear
+	Consultar el fitxer /proc/hpc/remote/from (de quin???)
+\item Saber l'identificador de proces (ID global) (el generem nosaltres?? cada
+cop que creem un proces??)
+\item Saber l'identificador local d'un proces (ex: PID) (...?)
+	Consultar el directori que representa el proces a /proc/[PID]
+\item Consultar resum de us de CPU (...?)
+	Per locals -> top -p PID
+	Per remots -> consultar fitxer /proc/hpc/remote/stats
+\item Consultar resum de us de Memoria (...?)
+	idem que l'anterior
+\end{itemize}
+
+\textbf{\textit{\underline{...? = volem mirar aquesta informacio de processos
+que son a altres maquines?}}} \\
+
+L'escenari sera oferir un VFS nomes al node d'entrada, i els migrate... de
+OPMosix
+no treuen la informacio dels processos de /proc...
+
+
+\subsubsection{Beowulf}
+\nocite{Beowulf-MiniHowto}
+Tal com s'ha explicat anteriorment, Beowulf és una arquitectura i no un paquet
+de software, de manera que hi ha diverses eines o distribucions que permeten
+contruïr aquesta arquitectura:
+
+\begin{itemize}
+\item Cluster Management Utility (CMU) de Compaq
+\item Projecte OSCAR (Open Source Cluster Application Resources)
+\item ROCKS Clustering Toolkit.
+\item Patagonia Cluster Project
+\item SMILE Cluster Management System (SCMS) i les seves eines per a Beowulf
+\item Projecte SCore Cluster System Software (Score)
+\item Software ALINKA Linux Clustering
+\end{itemize} 
+
+Degut a la gran varietat d'eines d'administració i de sistemes de comunicació
+que utilitzen els programadors (PVM, MPI, etc.) en aquesta arquitectura
+(precisament per ser una arquitectura i no un software concret), no ens ha estat
+possible definir les característiques concretes de Beowulf i, per tant, en la
+resta del treball ens basarem en les experiències concretes d'OpenMosix i la
+teoria sobre el que ofereix un sistema de computació distribuïda.
+
 
 \subsection{Microkernels (Mach/L4)}
+Tal com s'ha explicat a l'apartat 2, els clústers existents sobre Microkernels
+segueixen la mateixa arquitectura que BeoWulf, no existeix cap tipus d'estàndard
+ni d'API que ens serveixi per definir les característiques concretes de clústers
+en Microkernels, ja que totes les implementacions que hem trobat són a nivell
+d'investigació i/o recerca.
 
 
 
 \subsection{Altres Sistemes}
+¿¿¿¿No s'ha trobat res????
+
+Comentar-ho???????????????
 
 
 
