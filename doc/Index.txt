@@ -1,0 +1,41 @@
+
+1.- Què i perquè ho volem fer?
+
+2.- Conceptes bàsics
+	2.1.- Clustering
+		2.1.1.- Introducció
+		2.1.2.- Diferents implementacions
+			2.1.2.1.- Linux
+				2.1.2.1.1.- OpenMosix
+				2.1.2.1.2.- Beowulf      [lluis]
+				2.1.2.1.3.- [...]        [cesar]
+			2.1.2.2.- Microkernels (Mach/L4) [albert]
+			2.1.2.3.- [...]                  [albert]
+
+	2.2.- Abstraccions existents en S.F.
+		2.2.1.- Translators de Hurd              [lluis]
+		2.2.2.- /proc de Linux (VFS de Linux)    [johnny]
+		2.2.3.- [...]                            [cesar]
+
+3.- Software de clustering existent
+	3.1.- Necessitats generals
+		(què ens ha d'oferir la capa inferior)
+		(poder migrar processos, poder veure on són, ...)
+	3.2.- Què ens ofereixen els sistemes
+		(què proporciona a una capa superior)
+		(si ja proporciona una abstracció semblant a la que volem...)
+		3.2.1.- Linux
+			3.2.1.1- OpenMosix
+			3.2.1.2- Beowulf
+		3.2.2.- Microkernels (Mach/L4)
+		3.2.3.- [...]
+
+4.- Estudis i propostes de disseny
+	4.1.- Esquema del sistema de fitxers
+	4.2.- Solució cutre
+	4.3.- Solució guay
+	4.4.- Solució super-guay
+	4.5.- [...]
+
+5.- Detalls d'implementació
+

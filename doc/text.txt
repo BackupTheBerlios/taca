@@ -1,0 +1,95 @@
+
+ _________________________________
+( 1.- Què i perquè ho volem fer?  )
+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+El que pretenem fer és una interfície per al control i administració d'un
+sistema de clustering a través del sistema de fitxers.
+
+Per exemple, per migrar un procés d'un node a un altre, seria tan fàcil com
+moure un fitxer d'un directori a un altre (representant cada directori un node
+diferent i cada procés representat per un fitxer) amb el navegador de fitxers
+preferit.
+
+D'aquesta manera l'usuari no ha de tenir coneixements sobre com funcionen les
+eines de clustering que li ofereix el sistema on treballa, de forma que
+l'abstracció que proposem li permeti treballar amb diferents sistemes des
+d'una interfície comuna.
+
+
+ ______________________
+( 2.- Conceptes bàsics )
+ ~~~~~~~~~~~~~~~~~~~~~~
+
+2.1.- Clustering
+================
+
+2.1.1.- Introducció
+~~~~~~~~~~~~~~~~~~~
+
+En termes generals un cluster és un grup de sistemes independents que
+treballen junts com un sistema únic. El client interactua amb un cluster com
+si fós un servidor únic. Les configuracions de cluster s'utilitzen per a
+tenir disponibilitat i escalabilitat:
+
+    - Disponibilitat: Quan un sistema falla en el cluster, el programari
+      del cluster respon distribuint el treball del sistema que ha fallat als
+      sistemes que queden en el cluster.
+
+    - Escalabilitat: Quan la càrrega general excedeix les capacitats dels
+      sistemes en el cluster, és possible afegir sistemes addicionals al mateix.
+      En l'actualitat, els clients que planegen ampliar la capacitat del seu
+      sistema han de considerar servidors "high end" costosos que proporcionen
+      espai per a CPUs, controladors i memòria addicionals. A l'utilitzar la
+      tecnologia de clustering, els clients podran afegir gradualment sistemes
+      estàndars més petits, segons sigui necessari, per a satisfer els
+      requeriments generals de potència de processament. 
+
+
+2.1.2.- Diferents implementacions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A continuació passarem a descriure per sobre algunes de les diferents
+implementacions existents en alguns sistemes operatius, les quals representen
+diferents paradigmes.
+
+
+2.1.2.1.- Linux
+---------------
+
+2.1.2.1.1.- OpenMosix
+.....................
+
+És una imlpementació basada en la distribució de processos, com a modificació
+per al nucli, de forma que el procés és totalment transparent a l'usuari (al
+programador* de l'aplicació), cosa que fa molt més portables els programes a
+d'altres sistemes, utilitzin o no OpenMosix, i des d'aplicacions no
+dissenyades específicament per a executar-se en un cluster.
+
+De totes maneres, per tal de poder paral·lelitzar les aplicacions, aquestes
+han d'haver estat ja programades amb diversos processos, ja que OpenMosix no
+paral·lelitza aplicacions, sinó que només distribueix la càrrega entre els
+diferents nodes.
+
+Per exemple, si tenim deu nodes al cluster i executem un programa (amb un sol
+procés), tardarà el mateix que si només tinguéssim un node; però si executem
+deu programes d'aquests, tardaran el que si només n'executéssim un, ja que
+cadascun s'executarà en un node.
+
+Un inconvenient, però, és que tots els nodes del cluster han de tenir
+exactament el mateix nucli (sense compatibilitat de versions ni cap endavant
+ni cap enrere).
+
+Un altre dels problemes de OpenMosix, és que no pot migrar cap procés que
+comparteixi memòria, de forma que tampoc podrà migrar threads, ja que aquests
+comparteixen memòria.
+
+
+2.1.2.1.2.- Beowulf
+...................
+
+És una altra implementació per a Linux
+
+
+necessita xarxa ràpida
+
