@@ -2,6 +2,7 @@
 #include "backend.h"
 #include <linux/mm.h>
 #include <linux/proc_fs.h>
+#include <linux/list.h>
 
 
 struct proc_dir_entry* cerca_proc(struct proc_dir_entry *parent, char *nom);
@@ -26,8 +27,14 @@ int num_nodes (struct cluster_t *cluster_id)
 	struct proc_dir_entry *aux;
 	int res = 0;
 
+	
+	struct nameidata nd;
+
+
+
 	printk (" **mosix.c: num_nodes\n");
 	
+	/*
 	// Busquem el proc_dir_entry de /proc/hpc
 	aux = cerca_proc(&proc_root,"hpc");
 	
@@ -41,7 +48,42 @@ int num_nodes (struct cluster_t *cluster_id)
 		res++;
 		aux = aux->next;
 	}
-	
+	*/
+
+	/*
+	res = path_lookup("/proc/hpc/nodes/3",LOOKUP_DIRECTORY,&nd);
+	if (res == 0) {
+		struct list_head *head = &nd.dentry->d_subdirs;
+		struct dentry *pos;
+		printk("**%s: Hi ha alguna cosa\n",__FILE__);
+		for (pos = list_entry((head)->next, typeof(*pos), d_subdirs),
+				prefetch(pos->d_subdirs.next);
+				&pos->d_subdirs != (head);
+				pos = list_entry(pos->d_subdirs.next, typeof(*pos), d_subdirs),
+				prefetch(pos->d_subdirs.next)) {
+			printk("**%s: dentry_aux->d_name->name=%s\n",__FILE__,pos->d_name.name);
+			res++;
+		}
+	}
+	else {
+		printk("**%s: No hem trobat res\n",__FILE__);
+	}
+	*/
+
+	res = sys_open("/proc/hpc/nodes", O_DIRECTORY, O_RDONLY);
+	if (res > 0) {
+		int tam = 4096;
+		char buf[tam];
+		printk("  ** mosix.c: sys_open OK\n");
+		res = sys_read(res, buf, tam);
+		printk("  ** mosix.c: sys_read=%d\n",res);
+		if (res>0)
+			printk("  ** mosix.c: sys_read->\n%s\n",buf);
+	}
+	else {
+		printk("  ** mosix.c: sys_open KO\n");
+	}
+
 	printk("  ** mosix.c:  El numero de nodes es: %d\n",res);
 	return res;
 }
@@ -125,3 +167,13 @@ struct proc_dir_entry* cerca_proc(struct proc_dir_entry *parent, char *nom) {
 	else printk("  ** mosix.c : cerca_proc -> directorio buscado:%s, encontrado:%s\n",nom,aux->name);
 	return aux;
 }
+
+int path_lookup(const char *path, unsigned flags, struct nameidata *nd)
+{
+	int error = 0;
+	if (path_init(path, flags, nd))
+		error = path_walk(path, nd);
+	return error;
+}
+
+

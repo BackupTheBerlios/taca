@@ -68,7 +68,7 @@ struct file_operations rkfs_file_fops = {
 };
 
 // use this macro to declare the filesystem structure
-DECLARE_FSTYPE( rkfs, "rkfs", rkfs_read_super, 0 );
+DECLARE_FSTYPE( rkfs, "tacafs", rkfs_read_super, 0 );
 struct inode *rkfs_root_inode;
 
 char file_buf[1024] = "Hello World\n";
