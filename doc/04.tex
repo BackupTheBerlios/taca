@@ -14,13 +14,13 @@ ofereix el software de clustering.
 Per exemple, quan es vol migrar un procés, es a dir, es vol moure un fitxer que
 representa el procés en el sistema de fitxers que ofereix TACA, d'un node a un
 altre, el que faria el software del nostre mòdul seria utilitzar la comanda
-"migrate" de les \textit{OpenMosix Tools} (utilitats de clustering).
+\texttt{migrate} de les \textit{OpenMosix Tools} (utilitats de clustering).
 
-L'esquema de l'entorn seria el següent:
+L'esquema de l'entorn seria el que s'indica a la figura \ref{fig:esquema-simple}.
 
-\begin{figure}[hp]
+\begin{figure}[h]
    \centering
-   \includegraphics[scale=0.4]{esquema-simple.eps}
+   \includegraphics[scale=0.3]{esquema-simple.eps}
    \caption{Esquema del disseny simple}
    \label{fig:esquema-simple}
 \end{figure}
@@ -43,11 +43,12 @@ clustering.
 
 Per contra implica entendre les utilitats d'OpenMosix i realitzar una
 implementació basada en les crides a sistema que aquestes utilitzen, ja que
-al tenir el codi font podem seguir els passos que fan servir.
+al tenir el codi font podem seguir els passos que fan servir (veure figura
+\ref{fig:esquema-intermig}).
 
-\begin{figure}[hp]
+\begin{figure}[h]
    \centering
-   \includegraphics[scale=0.4]{esquema-intermig.eps}
+   \includegraphics[scale=0.3]{esquema-intermig.eps}
    \caption{Esquema del disseny intermig}
    \label{fig:esquema-intermig}
 \end{figure}
@@ -62,17 +63,18 @@ seves funcionalitats.
 Seguint amb l'exemple de migració de procés, en aquest cas es tractaria
 d'escriure directament les dades necessàries al fitxer corresponent del
 directori /proc. En aquest cas escrivint el identificador de node al fitxer
-\textit{/proc/\textless PID\textgreater/goto} aconseguiríem migrar el procés de
+\texttt{/proc/\textless PID\textgreater/goto} aconseguiríem migrar el procés de
 pid=PID al node desitjat. 
 
 Aquest disseny, respecte l'anterior, aporta simplicitat i independència respecte
 les utilitats que ofereix el cluster i les llibreries. Però per contra s'hauria
 de reescriure molt codi, per exemple pel control d'errors, permisos, etc. que ja
-estan implementats a les llibreries del software de clustering.
+estan implementats a les llibreries del software de clustering (veure figura
+\ref{fig:esquema-complex}).
 
 \begin{figure}[hp]
    \centering
-   \includegraphics[scale=0.4]{esquema-complex.eps}
+   \includegraphics[scale=0.3]{esquema-complex.eps}
    \caption{Esquema del disseny complex}
    \label{fig:esquema-complex}
 \end{figure}
@@ -80,11 +82,12 @@ estan implementats a les llibreries del software de clustering.
 
 \section {Disseny esquemàtic de l'arquitectura}
 
-Hem pensat que el nostre sistema tindria un disseny a dues capes:
+Hem pensat que el nostre sistema tindria un disseny a dues capes, tal com
+apareix a la figura \ref{fig:esquema-arquitectura}.
 
 \begin{figure}[hp]
    \centering
-   \includegraphics[scale=0.4]{esquema-arquitectura.eps}
+   \includegraphics[scale=0.3]{esquema-arquitectura.eps}
    \caption{Esquema de l'arquitectura}
    \label{fig:esquema-arquitectura}
 \end{figure}
@@ -105,7 +108,7 @@ sobre l'abstracció del sistema de fitxers que proporciona (VFS).
 Com que volem crear una abstracció (genèrica) a través del sistema de fitxers, a
 continuació definirem quina serà l'estructura de la jerarquia de fitxers i
 directoris per donar suport a totes les tasques d'administració necessàries
-partint de les necessitats generals definides en el capítol anterior.
+partint de les necessitats generals definides en el capítol \ref{cha-soft}.
 
 Entendrem com a '/' (arrel) l'inici de la nostra jerarquia d'administració.
 
@@ -113,30 +116,30 @@ Entendrem com a '/' (arrel) l'inici de la nostra jerarquia d'administració.
 /
 `-- <IDCluster>
     |-- admin
-    |   |-- nnodes		Nombre de nodes al cluster
-    |   `-- load		Càrrega general del cluster
-    |-- self			Enllaç al propi node
+    |   |-- nnodes          Nombre de nodes al cluster
+    |   `-- load            Càrrega general del cluster
+    |-- self                Enllaç al propi node
     `-- <IDNode>
         |-- admin
-        |   |-- ncpu		Numero de CPUs al node
-        |   |-- load		Carrega del node
-        |   |-- mem		Estat de la memòria
-        |   |-- block_new	Bloqueja l'arribada de processos nous
-        |   |-- block_mig	Bloqueja la migració de processos locals
-        |   |-- auto_mig	Bloqueja la migració automàtica de processos
-        |   |-- come_home	Fa que els processos que ha llençat aquest node tornin
-        |   |-- go_home		Expulsar els processos convidats
-        |   |-- speed		Velocitat del node
-        |   `-- status		Estat del node i dels processos
+        |   |-- ncpu        Numero de CPUs al node
+        |   |-- load        Carrega del node
+        |   |-- mem         Estat de la memòria
+        |   |-- block_new   Bloqueja l'arribada de processos nous
+        |   |-- block_mig   Bloqueja la migració de processos locals
+        |   |-- auto_mig    Bloqueja la migració automàtica de processos
+        |   |-- come_home   Fa que els processos que ha llençat aquest node tornin
+        |   |-- go_home     Expulsar els processos convidats
+        |   |-- speed       Velocitat del node
+        |   `-- status      Estat del node i dels processos
         `-- <IDprocés>
-            |-- block           Bloqueja el procés en el node actual
-            |-- mem		Memòria del procés
-            |-- cmdline		Línia de comandes amb la que s'ha arrencat el programa
-            |-- status		Estat del procés
-            |-- nmig		Nombre de vegades que s'ha migrat el procés
-            |-- home		Node on s'ha creat el procés
-            |-- stat_cpu	Resum d'ús de CPU pel procés
-            `-- stat_mem	Resum d'ús de memòria pel procés
+            |-- block       Bloqueja el procés en el node actual
+            |-- mem         Memòria del procés
+            |-- cmdline     Línia de comandes amb la que s'ha arrencat el programa
+            |-- status      Estat del procés
+            |-- nmig        Nombre de vegades que s'ha migrat el procés
+            |-- home        Node on s'ha creat el procés
+            |-- stat_cpu    Resum d'ús de CPU pel procés
+            `-- stat_mem    Resum d'ús de memòria pel procés
 \end{verbatim} 
 
 
@@ -147,5 +150,5 @@ que el \textit{frontend} li comuniqui.
 
 És una capa d'adaptació entre el sistema de fitxers i el software de clustering,
 ja que la interfície que implementa l'hem dissenyada nosaltres de forma genèrica
-segons el que s'indica al capítol 3.
+segons el que s'indica al capítol \ref{cha-soft}.
 

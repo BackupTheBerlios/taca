@@ -1,14 +1,19 @@
 \chapter{Software de clustering existent}
+\label{cha-soft}
 
 \section{Necessitats generals}
 
-\subsection {A nivell de cluster...}
+El símbol $\Rightarrow$ a l'inici d'una línia indica els passos que s'haurien
+de dur a terme en la nostra arquitectura, independentment dels passos
+necessaris en el sistema de clustering corresponent.
+
+\subsection {A nivell de cluster \ldots}
 \begin{itemize}
 \item Consultar quantitat de nodes del cluster
 \item Consultar carrega total del cluster
 \end{itemize}
 
-\subsection {A nivell de node...}
+\subsection {A nivell de node \ldots}
 \begin{itemize}
 \item Quantitat de CPU's d'un node
 \item Consultar càrrega del node
@@ -17,8 +22,8 @@
 \item Bloquejar la migració de procéssos locals
 \item Activar/Desactivar la migració automàtica de procéssos
 \item Demanar que els procéssos que ha creat un node i han migrat, tornin  a
-aquest node (come back home)
-\item Expulsar els "procéssos convidats" a casa
+aquest node (\textit{come back home})
+\item Expulsar els ``procéssos convidats'' a casa
 \item Saber quin identificador te un node
 \item Modificar/Consultar la velocitat d'un node
 \item Consultar informació de procéssos (resum de l'estat de procéssos locals, i
@@ -26,16 +31,16 @@ remots)
 \item Consultar resum de l'estat del node
 \end{itemize}
 
-\subsection {A nivell de procés ...}
+\subsection {A nivell de procés \ldots}
 \begin{itemize}
 \item Moure procéssos d'un node a un altre \\
-	=> Esborrar els fitxers relatius al procés del node origen \\
-	=> Generar els fitxers relatius al procés al node destí
+	$\Rightarrow$ Esborrar els fitxers relatius al procés del node origen \\
+	$\Rightarrow$ Generar els fitxers relatius al procés al node destí
 \item Bloquejar un procés en un node concret
-\item Crear un nou procés en una maquina (crear un fitxer) \\
-	=> Generar els fitxers relatius al procés en aquest node.
+\item Crear un nou procés en una màquina (crear un fitxer) \\
+	$\Rightarrow$ Generar els fitxers relatius al procés en aquest node.
 \item Matar un procés (esborrar un fitxer) \\
-	=> Esborrar els fitxers relatius al procés al node on s'està executant.
+	$\Rightarrow$ Esborrar els fitxers relatius al procés al node on s'està executant.
 \item Copiar un procés (arrencar una nova execució del programa)
 \item Modificar/veure memòria del procés
 \item Consultar la línia de comandes amb la que s'ha executat
@@ -49,8 +54,12 @@ remots)
 \item Consultar resum de us de Memòria
 \end{itemize}
 
+\subsection {A nivell de thread \ldots}
+En el cas dels threads, les operacions a dur a terme són anàlogues al cas dels
+processos.
 
-\section{Com es pot fer en ... ?}
+
+\section{Com es pot fer en \ldots ?}
                 
 \subsection{Linux}
 
@@ -72,7 +81,7 @@ menys possibilitats d'administració i monitorització.
 
 
 \begin{enumerate}
-\item A nivell de cluster...
+\item A nivell de cluster \ldots
 \begin{itemize}
 \item Consultar quantitat de nodes del cluster \\
 	Consultant el numero de subdirectoris de tipus NODE del directori cluster.
@@ -80,7 +89,7 @@ menys possibilitats d'administració i monitorització.
 	Mitjana ponderada de la carrega dels nodes que conte el cluster.
 \end{itemize}
 
-\item A nivell de node...
+\item A nivell de node \ldots
 \begin{itemize}
 \item Quantitat de CPU's d'un node \\
 	Consultant el fitxer /proc/hpc/nodes/\textless opMosix\_ID\textgreater/cpus
@@ -96,9 +105,9 @@ altres) \\
 \item Activar/Desactivar la migració automàtica de procéssos \\
 	Modificar el fitxer /proc/hpc/admin/stay
 \item Demanar que els procéssos que ha creat un node i han migrat, tornin  a
-aquest node (come back home) \\
+aquest node (\textit{come back home}) \\
 	Modificar el fitxer /proc/hpc/admin/bring
-\item Expulsar els "procéssos convidats" a casa \\
+\item Expulsar els ``procéssos convidats'' a casa \\
 	Modificar el fitxer /proc/hpc/admin/expel
 \item Saber quin identificador té un node \\
 	Consultar el fitxer /proc/hpc/admin/mospe (o mirar el nom del directori del
@@ -114,16 +123,16 @@ operacions de consulta de informació de procés (mirar següent secció)
 anteriors.
 \end{itemize}
 
-\item A nivell de procés...
+\item A nivell de procés \ldots
 \begin{itemize}
 \item Moure procéssos d'un node a un altre \\
-	Fer un \textit{migrate} del procés que volem moure al node on ha d'anar
+	Fer un \texttt{migrate} del procés que volem moure al node on ha d'anar
 \item Bloquejar un procés en un node concret \\
 	Modificar el fitxer /proc/\textless PID\textgreater/lock
 \item Crear un nou procés en una maquina (crear un fitxer) \\
 	Posar en execució el procés al node on volem que s'executi
 \item Matar un procés (esborrar un fitxer) \\
-	Fer un "kill" del procés
+	Fer un \texttt{kill} del procés
 \item Copiar un procés (arrencar una nova execució del programa) \\
 	Això no és ofert directament per OpenMosix, sinó que es tracta
 	simplement de tornar a executar el programa
@@ -147,11 +156,18 @@ anteriors.
 	globals, de forma que ja són els mateixos que els locals (es troben a
 	/proc/\textless PID\textgreater)
 \item Consultar resum de ús de CPU \\
-	Per locals -> top -p PID \\
-	Per remots -> consultar fitxer /proc/hpc/remote/stats
+	Per locals $\rightarrow$ top -p PID \\
+	Per remots $\rightarrow$ consultar fitxer /proc/hpc/remote/stats
 \item Consultar resum de us de Memòria \\
 	Ídem que l'anterior
 \end{itemize}
+
+\item A nivell de thread \ldots
+Com que OpenMosix no arriba tan avall (la seva granularitat arriba fins al
+nivell dels processos), les úniques operacions sobre threads que es poden dur
+a terme són les d'informació, ja que estan suportades directament pel sistema
+operatiu (i en el cas de Linux ens són accessibles perquè treballem des de
+dins del kernel).
 \end{enumerate} 
 
 

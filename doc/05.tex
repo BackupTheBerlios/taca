@@ -1,3 +1,5 @@
+\nocite{lkAPI}
+
 \chapter {Detalls d'implementació}
 
 Per a fer la nostra implementació, hem escollit el \textit{disseny complex}.
@@ -28,6 +30,13 @@ següents parts.
 
 \section{Frontend: sistema de fitxers virtual}
 
+\nocite{VFS-overview}
+\nocite{VFS-kmp}
+\nocite{VFS-lki}
+\nocite{VFS-libfs}
+\nocite{VFS-rkfs}
+\nocite{VFS-tlk}
+\nocite{VFS-seq}
 Aquest sistema de fitxers està basat en la interfície del VFS (\textit{Virtual
 File System}) que proporciona Linux.
 
@@ -37,17 +46,17 @@ forma dinàmica amb les dades obtingudes del \textit{backend}.
 Bàsicament, en iniciar-se el mòdul, es registra el nostre sistema de fitxers:
 \textit{tacafs}. I es desenregistra en descarregar el mòdul.
 
-\begin{verbatim}
+\begin{codi}
 static int __init tacafs_init(void)
-{
-	return register_filesystem(&tacafs_type);
-}
+\{
+   return register_filesystem(&tacafs_type);
+\}
 
 static void __exit tacafs_exit(void)
-{
-	unregister_filesystem(&tacafs_type);
-}
-\end{verbatim}
+\{
+   unregister_filesystem(&tacafs_type);
+\}
+\end{codi}
 
 Seguidament a carregar el mòdul, ja es pot muntar el sistema de fitxers allà on
 es vulgui, de forma que es crida a la operació que omple les dades del
@@ -62,30 +71,36 @@ Sobre els directoris, les funcions més destacables són:
 \item [file\_operations.readdir:]
 Genera els continguts que es veuen en llegir els continguts d'un directori (per
 exemple, els noms de fitxers, directoris i els seus permisos en fer un
-\verb"ls").
+\texttt{ls}).
 
-En el següent codi (\verb"frontend/linux/*.c") generem el contingut per al directori
+En el següent codi (\texttt{frontend/linux/*.c}) generem el contingut per al directori
 arrel, que llista els clusters que hi ha al sistema. En la resta de directoris es
 faria de forma anàloga però canviant les crides al \textit{backend}.
 
-\begin{verbatim}
-int tacafs_f_readdir( struct file *file, void *dirent, filldir_t filldir ) {
-	[...]
-	if(filldir(dirent, ".", 1, file->f_pos++, de->d_inode->i_ino, DT_DIR) ||
-	  (filldir(dirent, "..", 2, file->f_pos++, de->d_parent->d_inode->i_ino, DT_DIR)))
-		return 0;
-	[...]
-	num = num_clusters();		// CRIDA AL BACKEND
-	[...]
-	llistar_clusters(llista);	// CRIDA AL BACKEND
-	while (llista != NULL) {
-		if(filldir(dirent, llista->nom, strlen(llista->nom), file->f_pos++, DIR_INODE_NUMBER, DT_DIR))
-			return 0;
-		llista = llista->next;
-	}
-	[...]
-}
-\end{verbatim}
+\begin{codi}
+int tacafs_f_readdir (struct file *file, void *dirent,
+                      filldir_t filldir )
+\{
+   [...]
+   if(filldir(dirent, ".", 1, file->f_pos++, de->d_inode->i_ino,
+              DT_DIR)
+      ||
+      filldir(dirent, "..", 2, file->f_pos++,
+              de->d_parent->d_inode->i_ino, DT_DIR))
+      return 0;
+   [...]
+   num = num_clusters();      // CRIDA AL BACKEND
+   [...]
+   llistar_clusters(llista);  // CRIDA AL BACKEND
+   while (llista != NULL) \{
+      if(filldir(dirent, llista->nom, strlen(llista->nom),
+                 file->f_pos++, DIR_INODE_NUMBER, DT_DIR))
+         return 0;
+      llista = llista->next;
+   \}
+   [...]
+\}
+\end{codi}
 
 \item [inode\_operations.lookup:]
 Donada una estructura dentry, que en el VFS de Linux és l'encarregade de
@@ -95,31 +110,34 @@ associa l'inode al dentry.
 
 Aquesta funció seria cridada en accedir al directori en qüestió.
 
-\begin{verbatim}
-struct dentry *tacafs_i_lookup (struct inode *parent_inode, struct dentry *dentry) {
-	[...]
-	if(!(file_inode = iget( parent_inode->i_sb, DIR_INODE_NUMBER)))
-		return ERR_PTR(-ENOMEM);
-	//file_inode->i_size = file_size;
-	file_inode->i_mode = S_IFDIR|S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH;
-	file_inode->i_fop = &tacafs_dir_fops;	// file_operations
-	file_inode->i_op = &tacafs_iops;	// inode_operations
-	// add the inode to the dentry object
-	d_add(dentry, file_inode);
-}
-\end{verbatim}
+\begin{codi}
+struct dentry *tacafs_i_lookup (struct inode *parent_inode,
+                                struct dentry *dentry)
+\{
+   [...]
+   if(!(file_inode = iget(parent_inode->i_sb, DIR_INODE_NUMBER)))
+      return ERR_PTR(-ENOMEM);
+   file_inode->i_mode = S_IFDIR|S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH;
+   // file_operations
+   file_inode->i_fop = &tacafs_dir_fops;
+   // inode_operations
+   file_inode->i_op = &tacafs_iops;
+   // afegir el inode al dentry
+   d_add(dentry, file_inode);
+\}
+\end{codi}
 \end{description}
 
-En quant als fitxers, les operacions que duu associades són el \textbf{lookup},
-que duu a terme la mateixa tasca que en el cas dels directoris, el \textbf{read}
-i el \textbf{write} que són els encarregats de llegir i escriure els continguts
-del fitxer i el \textit{rename} que és l'encarregat de tractar amb el moviment
+En quant als fitxers, les operacions que duu associades són el \texttt{lookup},
+que duu a terme la mateixa tasca que en el cas dels directoris, el \texttt{read}
+i el \texttt{write} que són els encarregats de llegir i escriure els continguts
+del fitxer i el \texttt{rename} que és l'encarregat de tractar amb el moviment
 de fitxers i directoris.
 
-Les funcions \textbf{read} i \textbf{write} no ens ha calgut implementar-les per
+Les funcions \texttt{read} i \texttt{write} no ens ha calgut implementar-les per
 l'objectiu que ens hem fixat.
 
-La funció clau per a la migració de processos és \textbf{rename}, però no la hem
+La funció clau per a la migració de processos és \texttt{rename}, però no la hem
 pogut arribar a implementar degut a què ens hem trobat una sèrie de problemes
 que ens han portat molt de temps per trobar-hi solució a l'hora d'implementar el
 \textit{backend} d'OpenMosix que explicarem tot seguit.
@@ -130,24 +148,26 @@ que ens han portat molt de temps per trobar-hi solució a l'hora d'implementar el
 \subsection{Definició de la interfície}
 
 Partint dels objectius que ens hem fixat, hem definit una interfície genèrica
-(fitxer \verb"backend/backend.h") per a tractar des del \textit{frontend} amb
-el \textit{backend}.
+(fitxer \linebreak \texttt{backend/backend.h}) per a tractar des del 
+\textit{frontend} amb el \textit{backend}.
 
 Aquesta interfície consta d'unes operacions necessàries per a generar
 l'estructura del sistema de fitxers:
 
-\begin{verbatim}
+\begin{codi}
 int num_clusters();
 int llistar_clusters (struct cluster_t *llista);
-int num_nodes(struct cluster_t *cluster_id);
-int llistar_nodes (struct cluster_t *cluster_id, struct node_t *llista);
-int num_procs(struct cluster_t *cluster_id, struct node_t *node_id);
-int llistar_procs (struct cluster_t *cluster_id, struct node_t *node_id, struct proces_t *lista);
-\end{verbatim}
+int num_nodes (struct cluster_t *cluster_id);
+int llistar_nodes (struct cluster_t *cluster_id,
+                   struct node_t *llista);
+int num_procs (struct cluster_t *cluster_id, struct node_t *node_id);
+int llistar_procs (struct cluster_t *cluster_id, struct node_t *node_id,
+                   struct proces_t *lista);
+\end{codi}
 
 I una sèrie de funcions per a dur a terme les funcionalitats que hem definit:
 
-\begin{verbatim}
+\begin{codi}
 int migrar (struct proces_t  *proces, struct node_t *node_desti);
 
 /* El node pot rebre procs. nous ? */
@@ -158,34 +178,36 @@ int node_bloquejat_enviar (struct node_t *node);
 
 /* El proces no es pot migrar */
 int proces_bloquejat (struct proces_t *proc);
-\end{verbatim}
+\end{codi}
 
 
 \subsection{Implementacions de la interfície}
 
 \subsubsection{Exemple \textit{dummy}}
 
-Primerament hem implementat un petit \textit{backend} d'exemple que crea sempre les
-mateixes dades per tal de comprovar que la part que hem implementat del
+Primerament hem implementat un petit \textit{backend} d'exemple que crea sempre
+les mateixes dades per tal de comprovar que la part que hem implementat del
 \textit{frontend} funciona correctament, és a dir, tenim un sistema de fitxers
 navegable.
 
-Aquest exemple es troba a \verb"backend/dummy/dummy.c".
+Aquest exemple es troba a \texttt{backend/dummy/dummy.c}.
 
 
-\subsubsection{Problema d'OpenMosix}
+\subsubsection{El problema d'OpenMosix}
+
+\nocite{OpenMosix-API}
 
 El problema al que abans fèiem referència a l'apartat del \textit{frontend} és
 el que ens hem trobat a l'hora de fer una implementació per a OpenMosix.
 
 Bàsicament el problema és que OpenMosix ha estat pensat per a ser accedit sola i
 exclusivament a través de la interfície que ofereix al directori
-\verb"/proc/hpc", sense exportar cap símbol utilitzable des del propi nucli, de
+\texttt{/proc/hpc}, sense exportar cap símbol utilitzable des del propi nucli, de
 forma que l'única manera d'accedir-hi és a través del VFS, el qual només és
 accessible a través de programes amb un context propi (com serien programes en
 mode usuari o threads de kernel).
 
-Aquest intent d'implementació es troba a \verb"backend/openmosix/".
+Aquest intent d'implementació es troba a \texttt{backend/openmosix/}.
 
 Algunes possibles solucions que no hem pogut implementar per falta de temps
 serien:
@@ -196,12 +218,13 @@ Una solució que hem trobat sense haver de modificar ni el kernel ni el codi
 d'OpenMosix, és, en tan bon punt s'activi el nostre sistema de fitxers, arrencar
 un thread de kernel o programa en mode usuari (daemon) que esperi peticions
 provinents del nostre \textit{backend}, moment en què aquest programa o thread
-que duria a terme la petició a través de \verb"/proc/hpc/" i retornaria el
-resultat altra vegada al nostre \textit{backend}.
+que duria a terme la petició a través de \texttt{/proc/hpc/} i retornaria el
+resultat altra vegada al nostre \textit{backend} (veure la figura
+\ref{fig:solucio-espai-usuari}).
 
-\begin{figure}[hp]
+\begin{figure}[hbtp]
    \centering
-   \includegraphics[scale=0.4]{solucio-espai-usuari.eps}
+   \includegraphics[scale=0.3]{solucio-espai-usuari.eps}
    \caption{Esquema de la possible solució}
    \label{fig:solucio-espai-usuari}
 \end{figure}

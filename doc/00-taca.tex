@@ -1,4 +1,4 @@
-\documentclass[a4paper,10pt]{report}
+\documentclass[a4paper,11pt]{report}
 
 \usepackage[latin1]{inputenc}
 \usepackage{amsmath}
@@ -10,23 +10,20 @@
 \usepackage{indentfirst}
 \usepackage{verbatim}
 \usepackage{alltt}
-\usepackage[vcentering,dvips]{geometry}
-
-\geometry{papersize={170mm,240mm},total={124mm,185mm}}
-
-% Salto de línea tras título de secciones \paragraph
-%\makeatletter % necesario para que reconozca a '@' como carácter normal
-%\renewcommand{\paragraph}{\@startsection{paragraph}{4}{\z@}{-3.25ex \@plus -1ex
-%\@minus -.2ex}{1.5ex \@plus .2ex}{\normalfont\normalsize\bfseries}}
-%\makeatother % necesario para que restablezca '@' como carácter especial
+\usepackage{hyperref}
+\usepackage[left=3cm,top=3cm,right=2.5cm,bottom=2.5cm]{geometry}
 
 % estil de citacio de codi
 \newenvironment{codi}
 	{\begin{quote} \begin{alltt}}
 	{\end{alltt}\end{quote}}
 
+% comanda rapida per escriure /proc en estil tt
 \newcommand{\proc}{\texttt{/proc}\ }
 
+% 4 nivells d'enumeracio i indexacio
+\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{4}
 
 % Title Page
 \author{
@@ -49,7 +46,6 @@
 
 \begin{document}
 
-\setcounter{tocdepth}{4}
 \maketitle
 
 \tableofcontents

@@ -1,0 +1,25 @@
+\chapter{Possibles ampliacions al disseny}
+
+\begin{description}
+    \item \textbf{Utilització de diversos \textit{backend} alhora} \\
+	Emulant el sistema que utilitza Linux per als diferents tipus de
+	sistemes de fitxers, es podria incloure un sistema que
+	permetés registrar dinàmicament en forma de mòduls cadascun dels
+	\textit{backend} sota demanda, de manera que en accedir a un clúster
+	en el nostre arbre, se seleccionaria el \textit{backend} corresponent
+	per a dur a terme la operació sol·licitada.
+	
+    \item \textbf{Recol·lecció d'informació remota} \\
+	Donades les limitacions d'\textit{OpenMosix} a l'hora d'accedir a la
+	informació de nodes remots, es podrien implementar dos nous elements,
+	un \textbf{recolector} d'informació, per a recollir la informació dels
+	nodes remots, i un \textbf{informador}, que aniria a cadascun dels
+	nodes remots als que volem poder accedir.
+
+	Així doncs, la informació dels nodes remots seria la informació del
+	node local d'allà on està cadascun dels recolectors, salvant així el
+	problema que ens oferia OpenMosix, i podent eliminar aleshores,
+	també, la limitació que nosaltres mateixos hem posat de crear
+	processos des d'un sol node com a punt d'entrada.
+\end{description}
+
