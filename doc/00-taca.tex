@@ -6,6 +6,7 @@
 \usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage[catalan]{babel}
+\usepackage{fancyhdr}
 
 % Salto de línea tras título de secciones \paragraph
 \makeatletter % necesario para que reconozca a '@' como carácter normal
@@ -37,11 +38,28 @@
 
 \tableofcontents
 
+% Cabeceras
+\pagestyle{fancy}
+%\fancyhf{} % borrar todos los ajustes
+% En lo siguiente, fancyhead sirve para configurar la cabecera, fancyfoot para
+% el pie.
+% Justificación: C=centered, R=right, L=left, (nada)=LRC
+% Página: O=odd, E=even, (nada)=OE
+\fancyhead[]{}  % número de capítulo
+\fancyhead[L]{\leftmark}  % número de capítulo
+%\fancyhead[R]{\thepage} % número de página
+% Modifica el ancho de las líneas de cabecera y pie
+\renewcommand{\chaptermark}[1]{
+	\markboth{\chaptername\  \thechapter. #1}{}
+}
+\renewcommand{\headrulewidth}{0.4pt}
+
 \input{01.tex}
 \input{02.tex}
 \input{03.tex}
 \input{04.tex}
 \input{05.tex}
+\input{06.tex}
 
 \pagebreak 
 \addcontentsline{toc}{chapter}{Bibliografia}
