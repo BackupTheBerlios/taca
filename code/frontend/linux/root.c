@@ -39,8 +39,8 @@ static struct inode *tacafs_root_inode;
 #include "dummy.c"
 
 static struct super_operations tacafs_sops = {
-put_inode: dummy_put_inode,
-delete_inode: dummy_delete_inode,
+//put_inode: dummy_put_inode,
+//delete_inode: dummy_delete_inode,
     clear_inode: tacafs_s_clear_inode,
     read_inode: tacafs_s_read_inode,
     statfs: tacafs_s_statfs
@@ -104,7 +104,7 @@ static void tacafs_s_clear_inode (struct inode *inode)
     /* totes les estructures tenen el nom a la mateixa posicio */
     if (inode != tacafs_root_inode) {
 	dprint("%s\n",((struct cluster_t*)inode->u.generic_ip)->nom);
-	kmem_cache_free(tacafs_inode_cachep, inode);
+	kmem_cache_free(tacafs_inode_cachep, inode->u.generic_ip);
     }
 }
 

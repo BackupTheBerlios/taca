@@ -39,9 +39,9 @@ struct inode *tacafs_make_inode (struct super_block *sb, int ino, int mode,
 	ret->i_blksize = PAGE_CACHE_SIZE;
 	ret->i_blocks = 0;
 	ret->i_atime = ret->i_mtime = ret->i_ctime = CURRENT_TIME;
-	if (iops)
+	//if (iops)
 	    ret->i_op = iops;
-	if (fops)
+	//if (fops)
 	    ret->i_fop = fops;
     }
     return ret;
