@@ -1,0 +1,145 @@
+\chapter{Conceptes bàsics}
+
+
+\section{Clustering}
+
+\subsection{Introducció}
+
+En termes generals un cluster és un grup de sistemes independents que treballen
+junts com un sistema únic. El client interactua amb un cluster com si fós un
+servidor únic. Les configuracions de cluster s'utilitzen per a tenir
+disponibilitat i escalabilitat:
+
+\begin{description}
+\item[Disponibilitat:]
+Quan un sistema falla en el cluster, el programari del cluster respon
+distribuint el treball del sistema que ha fallat als sistemes que queden en el
+cluster.
+
+\item[Escalabilitat:]
+Quan la càrrega general excedeix les capacitats dels sistemes en el cluster, és
+possible afegir sistemes addicionals al mateix. En l'actualitat, els clients que
+planegen ampliar la capacitat del seu sistema han de considerar servidors "high
+end" costosos que proporcionen espai per a CPUs, controladors i memòria
+addicionals. A l'utilitzar la tecnologia de clustering, els clients podran
+afegir gradualment sistemes estàndars més petits, segons sigui necessari, per a
+satisfer els requeriments generals de potència de processament. 
+\end{description}
+
+
+\subsection{Diferents implementacions}
+
+A continuació passarem a descriure per sobre algunes de les diferents
+implementacions existents en alguns sistemes operatius, les quals representen
+diferents paradigmes.
+
+
+\subsubsection[Hola]{Linux}
+
+\begin{itemize}
+\item \textbf{OpenMosix:}
+És una imlpementació basada en la distribució de processos, com a modificació
+per al nucli, de forma que el procés és totalment transparent a l'usuari (al
+programador* de l'aplicació), cosa que fa molt més portables els programes a
+d'altres sistemes, utilitzin o no OpenMosix, i des d'aplicacions no dissenyades
+específicament per a executar-se en un cluster.
+
+De totes maneres, per tal de poder paral·lelitzar les aplicacions, aquestes han
+d'haver estat ja programades amb diversos processos, ja que OpenMosix no
+paral·lelitza aplicacions, sinó que només distribueix la càrrega entre els
+diferents nodes.
+
+Per exemple, si tenim deu nodes al cluster i executem un programa (amb un sol
+procés), tardarà el mateix que si només tinguéssim un node; però si executem deu
+programes d'aquests, tardaran el que si només n'executéssim un, ja que cadascun
+s'executarà en un node.
+
+Un inconvenient, però, és que tots els nodes del cluster han de tenir exactament
+el mateix nucli (sense compatibilitat de versions ni cap endavant ni cap
+enrere).
+
+Un altre dels problemes de OpenMosix, és que no pot migrar cap procés que
+comparteixi memòria, de forma que tampoc podrà migrar threads, ja que aquests
+comparteixen memòria.
+
+
+\item \textbf{Beowulf:}
+\nocite{Beowulf-Home}
+\nocite{Beowulf-Howto}
+Beowulf, segons una de les definicions que hem trobat (doncs alguns diuen que es
+pot dir que un sistema és Beowulf només si està contruït de la mateixa forma que
+la màquina original de la NASA; d'altres van cap a l'altre extrem i diuen que és
+un sistema Beowulf tot aquell conjunt de màquines que corren codi paral·lel), és
+una arquitectura multi-computador que pot ser utilitzada per a fer computacoins
+en paral·lel. Normalment consisteix en un node servidor i un o més nodes
+connectats via Ethernet (o qualsevol altre xarxa), però el millor de tot és que
+es pot construïr amb hardware "normal", com per exemple qualsevol PC que pugui
+utilitzar Linux, adaptadors estàndar d'Ethernet i switchos. Beowulf també
+utilitza software "comú", com el sistema operatiu Linux, PVM (Parallel Virtual
+Machine) i MPI (Message Passing Interface). Una de les grans diferències entre
+Beowulf i un cluster de estacions de treball (COW - Cluster of Workstations) és
+el fet de què Beowulf es comporta com una única màquina més que no mas com un
+conjunt d'estacions de treball. Els nodes de Beowulf es poden pensar com un
+paquet de CPU + memòria que es pot connectar al cluster, tal com una CPU o un
+mòdul de memòria es poden connectar a una placa base.
+
+Beowulf no és un paquet de software especial, una nova topologia de xarxa o
+l'últim hack per al kernel, sinó que és una tecnologia de clustering de màquines
+Linux per a formar un supercomputador paral·lel virtual. Tot i que hi ha varis
+paquets de software com modificacions per al kernel, llibreries PVM i MPI i
+eines de configuració que fan l'arquitectura Beowulf més ràpida, més fàcil de
+configurar i molt més usable, un pot construïr una màquina de la classe Beowulf
+utilitzant distribucions de Linux estàndars sense cap software addicional.
+Tenint un parell de màquines linux en xarxa que comparteixen com a mínim el
+/home a través de NFS i es confien l'una a l'altra per executar shells remotes
+(rsh), es podria dir que es té una màquina Beowulf molt simple de dos nodes.
+
+Així doncs, està clar que una aplicació, per a funcionar en una arquitectura
+Beowulf, ha d'haver estat escrita utilitzant llibreries o mètodes
+especialitzats, no transparents a l'usuari, però ofereix més rendiment que, per
+exemple, OpenMosix (tot i que aquest últim és totalment transparent a l'usuari).
+
+De totes maneres, 
+
+
+\item \textbf{...Altre soft de clustering...}
+\end{itemize} 
+
+\subsubsection{Microkernels (Mach/L4)}
+
+\subsubsection{...Altres SOs amb clustering...}
+
+
+\section{Abstraccions existents en Sistemes de Fitxers}
+
+\subsection{Translators de Hurd}
+\nocite{Hurd-Translators}
+Els translators són servidors de Hurd (SO basat en el micronucli gnuMach, tot i
+que s'està migrant cap a oskit-Mach i, en un futur, cap a L4) que proporcionen
+la interfícies bàsica del sistema de fitxers, de manera que es poden insertar
+entre el contingut real d'un fitxer (entenent com a fitxer la representació
+corresponent en el sistema de fitxers - inode -, doncs el fitxer real pot estar
+en una altra màquina o, fins i tot, no ser cap fitxer, sinó la representació
+d'una zona de memòria) i l'usuari que accedeix al fitxer, de forma que
+\textit{tradueix} les peticions de l'usuari.
+
+Els translators, a més amés, tenen unes propietats molt interessants, i és que
+des del punt de vista del kernel, no són més que processos d'usuari, de forma
+que els pot executar qualsevol usuari, sense necessitat de tenir permisos de
+superusuari per instal·lar o modificar un translator, l'únic que fa falta és
+tenir drets d'accés a l'inode sobre s'uneix el translator. Molts translators no
+requereixen un fitxer per a funcionar, i és per això que la informació sobre
+aquests es guarda a l'inode.
+
+Els translators són responsables de servir totes les operacions del sistema de
+fitxers que fan referència a l'inode al que s'uneix. Per això, al no estar
+restringits al típic conjunt d'objectes (fitxer de dispositiu, link, etc.), són
+lliures de retornar qualsevol cosa que tingui sentit per al programador. Un
+exemple podria ser un translator que es comportés com un directori quan fós
+accedit per \texttt{cd} o \texttt{ls} però que al mateix temps es comportés com
+un fitxer al ser accedit per \texttt{cat}.
+
+
+\subsection{/proc de Linux vs. VFS de Linux}
+
+\subsection{...Altres abstraccions en SFs...}
