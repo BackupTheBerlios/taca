@@ -27,9 +27,13 @@ run: $(TARGET)
 	mount -t $(FSNAME) none $(MNTPOINT)
 
 re-run: $(TARGET)
-	umount $(MNTPOINT)
-	rmmod $(FSNAME)
+	-umount $(MNTPOINT)
+	-rmmod $(FSNAME)
 	make run
+
+tags:
+	find `pwd` -type f -name *.[ch] > cscope.files
+	cscope -q -b
 
 clean:
 	make -C frontend clean
