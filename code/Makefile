@@ -26,7 +26,7 @@ run: $(TARGET)
 	if [ ! -d $(MNTPOINT) ]; then mkdir -p $(MNTPOINT); fi
 	mount -t $(FSNAME) none $(MNTPOINT)
 
-re-run: re-$(TARGET)
+re-run: $(TARGET)
 	umount $(MNTPOINT)
 	rmmod $(FSNAME)
 	make run
