@@ -1,0 +1,32 @@
+
+Disseny esquemàtic del sistema
+==============================
+
+Disseny a tres capes:
+
+	Frontend	VFS
+	Adaptació	(definició d'una interfície)
+	Backend		Clustering (implementació de la interfície depenent del sistema de clustering)
+
+Definició d'una jerarquia:
+
+
+Frontend
+--------
+
+Implementació de la jerarquia generica d'administració a través de les funcions que proporciona l'abstracció
+(sistema de fitxers virtual) del sistema sobre el que s'executa.
+
+- Jerarquia
+
+Entendrem com a '/' (arrel) l'inici de la nostra jerarquia d'administració.
+
+/
+|- IDCluster
+|  |- admin
+|  |- self
+|  |- IDNode
+|  |  |- admin
+|  |  |- IDProces
+|  |     |- 
+

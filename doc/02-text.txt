@@ -1,21 +1,3 @@
- 
- _________________________________
-( 1.- Què i perquè ho volem fer?  )
- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-El que pretenem fer és una interfície per al control i administració d'un
-sistema de clustering a través del sistema de fitxers.
-
-Per exemple, per migrar un procés d'un node a un altre, seria tan fàcil com
-moure un fitxer d'un directori a un altre (representant cada directori un node
-diferent i cada procés representat per un fitxer) amb el navegador de fitxers
-preferit.
-
-D'aquesta manera l'usuari no ha de tenir coneixements sobre com funcionen les
-eines de clustering que li ofereix el sistema on treballa, de forma que
-l'abstracció que proposem li permeti treballar amb diferents sistemes des
-d'una interfície comuna.
-
 
  ______________________
 ( 2.- Conceptes bàsics )
