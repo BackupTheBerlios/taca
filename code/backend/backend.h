@@ -1,19 +1,18 @@
 struct cluster_t {
-
 	char *nom;
 	struct cluster_t *next;
 };
 
 struct node_t {
-
 	char *nom;
 	struct node_t *next;
+	struct cluster_t *parent;
 };
 
 struct proces_t {
-	
 	char *nom;
 	struct proces_t *next;
+	struct node_t *parent;
 };
 
 
