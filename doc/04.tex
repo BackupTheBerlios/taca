@@ -116,30 +116,37 @@ Entendrem com a '/' (arrel) l'inici de la nostra jerarquia d'administració.
 /
 `-- <IDCluster>
     |-- admin
-    |   |-- nnodes          Nombre de nodes al cluster
-    |   `-- load            Càrrega general del cluster
-    |-- self                Enllaç al propi node
+    |   |-- nnodes           Nombre de nodes al cluster
+    |   `-- load             Càrrega general del cluster
+    |-- self                 Enllaç al propi node
     `-- <IDNode>
         |-- admin
-        |   |-- ncpu        Numero de CPUs al node
-        |   |-- load        Carrega del node
-        |   |-- mem         Estat de la memòria
-        |   |-- block_new   Bloqueja l'arribada de processos nous
-        |   |-- block_mig   Bloqueja la migració de processos locals
-        |   |-- auto_mig    Bloqueja la migració automàtica de processos
-        |   |-- come_home   Fa que els processos que ha llençat aquest node tornin
-        |   |-- go_home     Expulsar els processos convidats
-        |   |-- speed       Velocitat del node
-        |   `-- status      Estat del node i dels processos
+        |   |-- ncpu         Numero de CPUs al node
+        |   |-- load         Carrega del node
+        |   |-- mem          Estat de la memòria
+        |   |-- block_new    Bloqueja l'arribada de processos nous
+        |   |-- block_mig    Bloqueja la migració de processos locals
+        |   |-- auto_mig     Bloqueja la migració automàtica de processos
+        |   |-- come_home    Fa que els processos que ha llençat aquest node tornin
+        |   |-- go_home      Expulsar els processos convidats
+        |   |-- speed        Velocitat del node
+        |   `-- status       Estat del node i dels processos
         `-- <IDprocés>
-            |-- block       Bloqueja el procés en el node actual
-            |-- mem         Memòria del procés
-            |-- cmdline     Línia de comandes amb la que s'ha arrencat el programa
-            |-- status      Estat del procés
-            |-- nmig        Nombre de vegades que s'ha migrat el procés
-            |-- home        Node on s'ha creat el procés
-            |-- stat_cpu    Resum d'ús de CPU pel procés
-            `-- stat_mem    Resum d'ús de memòria pel procés
+            |-- <IDthread>
+            |   |-- block    Bloqueja el thread en el node actual
+            |   |-- status   Estat del thread
+            |   |-- nmig     Nombre de vegades que s'ha migrat el thread
+            |   |-- home     Node on s'ha creat el thread
+            |   |-- stat_cpu Resum d'ús de CPU pel thread
+            |   `-- stat_mem Resum d'ús de memòria pel thread
+            |-- block        Bloqueja el procés en el node actual
+            |-- mem          Memòria del procés
+            |-- cmdline      Línia de comandes amb què s'ha arrencat el procés
+            |-- status       Estat del procés
+            |-- nmig         Nombre de vegades que s'ha migrat el procés
+            |-- home         Node on s'ha creat el procés
+            |-- stat_cpu     Resum d'ús de CPU pel procés
+            `-- stat_mem     Resum d'ús de memòria pel procés
 \end{verbatim} 
 
 
