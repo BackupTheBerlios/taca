@@ -1,42 +1,104 @@
+\documentclass{letter}
+
+%%%%%%%%%% Start TeXmacs macros
+\catcode`\à=\active \defà{\`a} \catcode`\À=\active \defÀ{\`A}
+\catcode`\á=\active \defá{\'a} \catcode`\Á=\active \defÁ{\'A}
+\catcode`\ä=\active \defä{\"a} \catcode`\Ä=\active \defÄ{\"A}
+\catcode`\â=\active \defâ{\^a} \catcode`\Â=\active \defÂ{\^A}
+\catcode`\å=\active \defå{{\aa}} \catcode`\Å=\active \defÅ{{\AA}}
+\catcode`\ç=\active \defç{\c{c}} \catcode`\Ç=\active \defÇ{\c{C}}
+\catcode`\è=\active \defè{\`e} \catcode`\È=\active \defÈ{\`E}
+\catcode`\é=\active \defé{\'e} \catcode`\É=\active \defÉ{\'E}
+\catcode`\ë=\active \defë{\"e} \catcode`\Ë=\active \defË{\"E}
+\catcode`\ê=\active \defê{\^e} \catcode`\Ê=\active \defÊ{\^E}
+\catcode`\ì=\active \defì{\`{\i}} \catcode`\Ì=\active \defÌ{\`{\I}}
+\catcode`\í=\active \defí{\'{\i}} \catcode`\Í=\active \defÍ{\'{\I}}
+\catcode`\ï=\active \defï{\"{\i}} \catcode`\Ï=\active \defÏ{\"{\I}}
+\catcode`\î=\active \defî{\^{\i}} \catcode`\Î=\active \defÎ{\^{\I}}
+\catcode`\ò=\active \defò{\`o} \catcode`\Ò=\active \defÒ{\`O}
+\catcode`\ó=\active \defó{\'o} \catcode`\Ó=\active \defÓ{\'O}
+\catcode`\ö=\active \defö{\"o} \catcode`\Ö=\active \defÖ{\"O}
+\catcode`\ô=\active \defô{\^o} \catcode`\Ô=\active \defÔ{\^O}
+\catcode`\ù=\active \defù{\`u} \catcode`\Ù=\active \defÙ{\`U}
+\catcode`\ú=\active \defú{\'u} \catcode`\Ú=\active \defÚ{\'U}
+\catcode`\ü=\active \defü{\"u} \catcode`\Ü=\active \defÜ{\"U}
+\catcode`\û=\active \defû{\^u} \catcode`\Û=\active \defÛ{\^U}
+\catcode`\ý=\active \defý{\'y} \catcode`\Ý=\active \defÝ{\'Y}
+\catcode`\ÿ=\active \defÿ{\"y} \catcode`\˜=\active \def˜{\"Y}
+\catcode`\½=\active \def½{!`}
+\catcode`\¾=\active \def¾{?`}
+\catcode`\ß=\active \defß{{\ss}}
+\newcommand{\chapter}[1]{\medskip\bigskip
+
+\noindent\textbf{\begin{center}\huge #1\end{center}}\vspace{-3ex}
+
+\noindent}
+\newcommand{\section}[1]{\medskip\bigskip
+
+\noindent\textbf{\LARGE #1}\vspace{-3ex}
+
+\noindent}
+\newcommand{\subsection}[1]{\medskip\bigskip
+
+\noindent\textbf{\Large #1}\vspace{-3ex}
+
+\noindent}
+\newcommand{\subsubsection}[1]{\medskip\bigskip
+
+\noindent\textbf{\large #1}\vspace{-3ex}
+
+\noindent}
+\newcommand{\paragraph}[1]{\smallskip
+
+\noindent\textbf{#1} }
+%%%%%%%%%% End TeXmacs macros
+
+\begin{document}
+
 \chapter{Software de clustering existent}
 
-\section{Necessitats generals}
-(què ens ha d'oferir la capa inferior)
-(poder migrar processos, poder veure on són, ...)
-(què nosaltres VOLEM poder fer)
+\section{Necessitats generals} (què ens ha d'oferir la capa inferior) (poder
+migrar processos, poder veure on són, ...) (què nosaltres VOLEM poder fer)
 
-\section{Què ens ofereixen els sistemes}
-(què proporciona a una capa superior)
-(si ja proporciona una abstracció semblant a la que volem...)
-(què nosaltres PODEM fer)
-                
+\section{Què ens ofereixen els sistemes} (què proporciona a una capa superior)
+(si ja proporciona una abstracció semblant a la que volem...) (què nosaltres
+PODEM fer)
+
 \subsection{Linux}
 
 \subsubsection{OpenMosix}
 
-\subsubsection{Beowulf}
-\nocite{Beowulf-MiniHowto}
-Tal com s'ha explicat anteriorment, Beowulf és una arquitectura i no un paquet
-de software, de manera que hi ha diverses eines o distribucions que permeten
-contruïr aquesta arquitectura:
-
-\begin{itemize}
-\item Cluster Management Utility (CMU) de Compaq
-\item Projecte OSCAR (Open Source Cluster Application Resources)
-\item ROCKS Clustering Toolkit.
-\item Patagonia Cluster Project
-\item SMILE Cluster Management System (SCMS) i les seves eines per a Beowulf
-\item Projecte SCore Cluster System Software (Score)
-\item Software ALINKA Linux Clustering
-\end{itemize} 
-
-Degut a la gran varietat d'eines d'administració i de sistemes de comunicació
-que utilitzen els programadors (PVM, MPI, etc.) en aquesta arquitectura
-(precisament per ser una arquitectura i no un software concret), no ens ha estat
-possible definir les característiques concretes de Beowulf i, per tant, en la
-resta del treball ens basarem en les experiències concretes d'OpenMosix i la
-teoria sobre el que ofereix un sistema de computació distribuïda.
+\paragraph{\subsubsection{Beowulf} {\nocite{Beowulf-MiniHowto}} Tal com s'ha
+explicat anteriorment, Beowulf és una arquitectura i no un paquet de software,
+de manera que hi ha diverses eines o distribucions que permeten contruïr
+aquesta arquitectura:}{\begin{itemize}
+  \item Cluster Management Utility (CMU) de Compaq
+  
+  \item Projecte OSCAR (Open Source Cluster Application Resources)
+  
+  \item ROCKS Clustering Toolkit.
+  
+  \item Patagonia Cluster Project
+  
+  \item SMILE Cluster Management System (SCMS) i les seves eines per a Beowulf
+  
+  \item Projecte SCore Cluster System Software (Score)
+  
+  \item Software ALINKA Linux Clustering
+\end{itemize}}{Degut a la gran varietat d'eines d'administració i de sistemes
+de comunicació que utilitzen els programadors (PVM, MPI, etc.) en aquesta
+arquitectura (precisament per ser una arquitectura i no un software concret),
+no ens ha estat possible definir les característiques concretes de Beowulf i,
+per tant, en la resta del treball ens basarem en les experiències concretes
+d'OpenMosix i la teoria sobre el que ofereix un sistema de computació
+distribuïda.}
 
 \subsection{Microkernels (Mach/L4)}
 
-\subsection{...}
+
+
+\subsection{Altres Sistemes}
+
+
+
+\end{document}
