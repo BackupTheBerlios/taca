@@ -7,10 +7,13 @@
 #include <linux/module.h>
 #include <linux/fs.h>
 #include <linux/sched.h>
+#include <linux/slab.h>
 
+#include <backend.h>
 #include <linux_debug.h>
 
 #include "linux_common.h"
+#include "cluster.h"
 
 #define TACAFS_MAGIC 0x20040617
 
@@ -19,10 +22,11 @@
  * Funcions
  */
 static struct super_block *tacafs_read_super (struct super_block *, void *, int);
-void tacafs_s_readinode (struct inode *);
-int tacafs_s_statfs (struct super_block *, struct statfs *);
-struct dentry *tacafs_i_lookup (struct inode *, struct dentry *);
-int tacafs_f_readdir (struct file *, void *, filldir_t);
+static void tacafs_s_clear_inode (struct inode *);
+static void tacafs_s_read_inode (struct inode *);
+static int tacafs_s_statfs (struct super_block *, struct statfs *);
+static struct dentry *tacafs_i_lookup (struct inode *, struct dentry *);
+static int tacafs_f_readdir (struct file *, void *, filldir_t);
 
 /*
  * Estructures
@@ -30,17 +34,16 @@ int tacafs_f_readdir (struct file *, void *, filldir_t);
 
 /* declaracio del file_system_type */
 DECLARE_FSTYPE (tacafs_type, "tacafs", tacafs_read_super, 0);
-struct inode *tacafs_root_inode;
+static struct inode *tacafs_root_inode;
 
-/* numeros d'inode */
-enum {
-    TACAFS_ROOT_INO = 1
-};
+#include "dummy.c"
 
 static struct super_operations tacafs_sops = {
-    read_inode: tacafs_s_readinode,
+put_inode: dummy_put_inode,
+delete_inode: dummy_delete_inode,
+    clear_inode: tacafs_s_clear_inode,
+    read_inode: tacafs_s_read_inode,
     statfs: tacafs_s_statfs
-    //  put_inode: tacafs_s_putinode, // inode fora de la cache
 };
 
 static struct inode_operations tacafs_root_iops = {
@@ -52,17 +55,12 @@ static struct file_operations tacafs_root_fops = {
     readdir: tacafs_f_readdir
 };
 
+kmem_cache_t *tacafs_inode_cachep;
 
 
 /*
  * Operacions del sistema de fitxers
  */
-
-void crea_arbre_estatic (struct super_block *sb)
-{
-    dprint("creant arbre estatic...\n");
-    tacafs_create_dir(sb, S_IRWXUGO, NULL, NULL, sb->s_root, "c1");
-}
 
 /**
  * tacafs_read_super - Omple les dades del super bloc
@@ -78,9 +76,9 @@ static struct super_block *tacafs_read_super (struct super_block *sb, void *buf,
     sb->s_op = &tacafs_sops; // operacions del super block
     sb->s_type = &tacafs_type; // file_system_type
 
-    tacafs_root_inode = tacafs_make_inode(sb, S_IFDIR|S_IRWXU,
-	    &simple_dir_inode_operations, &dcache_dir_ops);
-	    //&tacafs_root_iops, &tacafs_root_fops);
+    tacafs_root_inode = tacafs_make_inode(sb, INODE_ROOT, MODE_DIR,
+	    &tacafs_root_iops, &tacafs_root_fops);
+	    //&simple_dir_inode_operations, &dcache_dir_ops);
     if (!tacafs_root_inode)
 	return ERR_PTR(-ENOMEM);
 
@@ -89,9 +87,7 @@ static struct super_block *tacafs_read_super (struct super_block *sb, void *buf,
 	return ERR_PTR(-ENOMEM);
     }
 
-    crea_arbre_estatic(sb);
-
-    dprint("s'ha retornat un super_block valid\n");
+    dprint2("s'ha retornat un super_block valid\n");
     return sb;
 }
 
@@ -100,28 +96,41 @@ static struct super_block *tacafs_read_super (struct super_block *sb, void *buf,
  * Operacions del super_block
  */
 
+/**
+ * tacafs_s_clear_inode - Elimina les dades especifiques del SF del inode
+ **/
+static void tacafs_s_clear_inode (struct inode *inode)
+{
+    /* totes les estructures tenen el nom a la mateixa posicio */
+    if (inode != tacafs_root_inode) {
+	dprint("%s\n",((struct cluster_t*)inode->u.generic_ip)->nom);
+	kmem_cache_free(tacafs_inode_cachep, inode);
+    }
+}
+
 
 /**
  * tacafs_s_readinode - Cridat per llegir un inode del SF muntat
  **/
-void tacafs_s_readinode (struct inode *inode)
+static void tacafs_s_read_inode (struct inode *inode)
 {
     inode->i_mtime = inode->i_atime = inode->i_ctime = CURRENT_TIME;
-    dprint("\n");
+    dprint2("<==>\n");
 }
 
 
 /**
  * tacafs_s_statfs - Cridat per obtenir informacio del SF com tamany, etc.
  **/
-int tacafs_s_statfs (struct super_block *sb, struct statfs *buf) {
+static int tacafs_s_statfs (struct super_block *sb, struct statfs *buf)
+{
     buf->f_type = TACAFS_MAGIC;
     buf->f_bsize = PAGE_SIZE/sizeof(long);
     buf->f_bfree = 0;
     buf->f_bavail = 0;
     buf->f_ffree = 0;
     buf->f_namelen = NAME_MAX;
-    dprint("\n");
+    //dprint2("<==>\n");
     return 0;
 }
 
@@ -130,62 +139,111 @@ int tacafs_s_statfs (struct super_block *sb, struct statfs *buf) {
  * Operacions sobre inodes
  */
 
-
 /**
- * tacafs_i_lookup - 
- * Aquesta funcio genera el inode pel dentry que es vol mirar 
- * El inode que es vol generar és "fill" del parent_inode
- *
- *
- * TODO: comprovar que el directori on es vol entrar és correcte
- */
-
-struct dentry *tacafs_i_lookup (struct inode *parent_inode, struct dentry *dentry)
+ * tacafs_i_lookup - Crea el inode del dentry qye es vol mirar
+ **/
+static struct dentry *tacafs_i_lookup (struct inode *parent_inode, struct dentry *dentry)
 {
-  struct inode *file_inode;
-  
-  dprint("dentry %s\n", dentry->d_name.name);
-  
-  
-  /* Hem de generar el inode per mostrar un clusters (el dentry) 
-   * Per tant un directori
-   */
-  // allocate an inode object
- // if(!(file_inode = iget( parent_inode->i_sb, DIR_INODE_NUMBER)))
-      return ERR_PTR(-ENOMEM);
-  //file_inode->i_size = file_size;
-  file_inode->i_mode = S_IFDIR|S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH;
-//  file_inode->i_fop = &tacafs_dir_fops;
-//  file_inode->i_op = &tacafs_iops;
-  //  add the inode to the dentry object
-  d_add(dentry, file_inode);
+    struct dentry *res = ERR_PTR(-ENOENT);
+    struct cluster_t cluster;
 
-  dprint(" lookup: inode per cluster %s generat\n", dentry->d_name.name);
-  return NULL;
+    dprint("dentry %s\n", dentry->d_name.name);
+
+    if (!obtenir_cluster(dentry->d_name.name, &cluster))
+	goto out;
+
+    dprint2("match!\n");
+
+    /*
+     * Hem de generar el inode per mostrar un cluster (el dentry)
+     * Per tant un directori
+     */
+    res = tacafs_fill_dentry(parent_inode->i_sb, dentry, INODE_CLUSTER,
+	    MODE_DIR, &cluster, sizeof(cluster), &tacafs_cluster_iops,
+	    &tacafs_cluster_dops, &tacafs_cluster_fops);
+
+out:
+    dprint("inode per cluster %s %s\n", dentry->d_name.name,
+	    res == ERR_PTR(-ENOENT) ? "inexistent" :
+	    (res == NULL ? "generat" : "no generat per error"));
+    return res;
 }
 
-//  readdir: tacafs_f_readdir
+
+/*
+ * Operacions sobre files
+ */
+
+/**
+ * tacafs_f_readdir - Genera la llista de continguts d'un directori
+ **/
+static int tacafs_f_readdir (struct file *file, void *dirent, filldir_t filldir)
+{
+    struct dentry *dentry = file->f_dentry;
+    struct cluster_t *llista;
+    int num;
+
+    dprint2("==>\n");
+
+    if(file->f_pos > 0 )
+	return 1;
+
+    if(filldir(dirent, ".", 1, file->f_pos++, dentry->d_inode->i_ino, DT_DIR) ||
+	    filldir(dirent, "..", 2, file->f_pos++, dentry->d_parent->d_inode->i_ino, DT_DIR))
+	return 0;
+
+    num = num_clusters();
+    if (num > 0) {
+	llista = (struct cluster_t *)kmalloc(sizeof(struct cluster_t)*num ,GFP_KERNEL);	
+	if (llistar_clusters(llista, num) > 0) {
+	    dprint2("Creant clusters\n");
+	    num = 0;
+	    while (llista != NULL) {
+		if(filldir(dirent, llista->nom, strlen(llista->nom), file->f_pos++, INO(++num,INODE_CLUSTER), DT_DIR ))
+		    return 0;
+		llista = llista->next;
+	    } 
+	    dprint2("Directoris per clusters creats\n");
+	}
+	kfree(llista);
+    }
+    else
+	dprint2("No hi ha clusters a mostrar\n");
+    return 1;
+}
+
 
 /*
  * Informacio/codi especific dels moduls de linux
  */
 
+#define CACHE_NAMELEN   20 
+#include <asm/hardirq.h>
+#define BYTES_PER_WORD          sizeof(void *)
+#define MAX_OBJ_ORDER   5
 static int __init tacafs_init(void)
 {
-    	return register_filesystem(&tacafs_type);
+    dprint2("Enregistrant sistema de fitxers\n");
+    tacafs_inode_cachep = kmem_cache_create("tacafs_inode",
+	    sizeof(struct tacafs_inode_info), 0, 0, NULL, NULL);
+    if (!tacafs_inode_cachep)
+	return -ENOMEM;
+    return register_filesystem(&tacafs_type);
 }
 
 static void __exit tacafs_exit(void)
 {
-    	unregister_filesystem(&tacafs_type);
+    dprint2("Desenregistrant sistema de fitxers\n");
+    unregister_filesystem(&tacafs_type);
+    kmem_cache_destroy(tacafs_inode_cachep);
 }
 
 module_init(tacafs_init);
 module_exit(tacafs_exit);
 
-//MODULE_INFO(tag, info);
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("tacafs crew");
 MODULE_DESCRIPTION("taca file system module");
+//MODULE_INFO(tag, info);
 //MODULE_PARM_DESC(_parm, desc);
 
