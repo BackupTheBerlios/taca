@@ -1,4 +1,8 @@
 /**
+ *
+ * XXX
+ * dentry -> d_fsdata : fs-specific data
+ *
  * Notes:
  * Implementing a small filesystem having one file
  *
@@ -104,7 +108,7 @@ static struct super_block *rkfs_read_super( struct super_block *sb, void *buf, i
 
 void rkfs_s_readinode( struct inode *inode ) {
     inode->i_mtime = inode->i_atime = inode->i_ctime = CURRENT_TIME;
-    printk( "rkfs: super_operations.readinode called\n" );
+    printk("rkfs: super_operations.readinode called\n");
 }
 
 /*
@@ -255,17 +259,21 @@ int rkfs_f_readdir( struct file *file, void *dirent, filldir_t filldir ) {
 	int num;
 	
 	num = num_clusters();
-	llista = (struct cluster_t *)kmalloc(sizeof(struct cluster_t)*num ,GFP_KERNEL);	
-	llistar_clusters(llista);
+	if (num > 0) {
+		llista = (struct cluster_t *)kmalloc(sizeof(struct cluster_t)*num ,GFP_KERNEL);	
+		llistar_clusters(llista);
 
-    	printk( " readdir: Creant clusters\n" );
-	while (llista != NULL) {	
-		if(filldir(dirent, llista->nom, strlen(llista->nom), file->f_pos++, DIR_INODE_NUMBER, DT_DIR ))
-	         	return 0;
-		llista = llista->next;
-	} 
-	printk(" readdir: Directoris per clusters creats\n");
-	kfree(llista);
+    		printk( " readdir: Creant clusters\n" );
+		while (llista != NULL) {	
+			if(filldir(dirent, llista->nom, strlen(llista->nom), file->f_pos++, DIR_INODE_NUMBER, DT_DIR ))
+	        	 	return 0;
+			llista = llista->next;
+		} 
+		printk(" readdir: Directoris per clusters creats\n");
+		kfree(llista);
+	}
+	else printk(" readdir: No hi ha clusters a mostrar\n");
+    
 		
     }
     
@@ -282,37 +290,46 @@ int rkfs_f_readdir( struct file *file, void *dirent, filldir_t filldir ) {
 	
 	// Obtenim tots els clusters i busquem en quin estem
 	num = num_clusters();
-	llista = (struct cluster_t *)kmalloc(sizeof(struct cluster_t)*num ,GFP_KERNEL);	
-	llistar_clusters(llista);
+	if (num>0) {
+		llista = (struct cluster_t *)kmalloc(sizeof(struct cluster_t)*num ,GFP_KERNEL);	
+		llistar_clusters(llista);
 	
-	while (llista != NULL && i==0) {	
+		while (llista != NULL && i==0) {	
+			
+			printk(" readdir: Busquem el cluster\n");
 		
-		printk(" readdir: Busquem el cluster\n");
-		
-		if (!strcmp(de->d_name.name, llista->nom)) i=1;
-		else llista = llista->next;
-	} 
+			if (!strcmp(de->d_name.name, llista->nom)) i=1;
+			else llista = llista->next;
+		} 
 
-	// Llistem tots els nodes del cluster
-	num = num_nodes(llista);	
-	llista1 = (struct node_t *)kmalloc(sizeof(struct node_t)*num ,GFP_KERNEL);
-	llistar_nodes(llista,llista1);
-
-	while (llista1 != NULL) {
-		
-		printk(" readdir: Creem els directoris pels nodes\n");
-		
-		if(filldir(dirent, llista1->nom, strlen(llista1->nom), file->f_pos++, DIR_INODE_NUMBER, DT_DIR ))
-			return 0;
-		llista1 = llista1->next;
-	}
-    	
-	printk(" readdir: Directoris per nodes creats\n");
-    	
 	
-	kfree(llista);
-	kfree(llista1);
+		// Llistem tots els nodes del cluster
+		num = num_nodes(llista);	
+		if (num>0) {
+			llista1 = (struct node_t *)kmalloc(sizeof(struct node_t)*num ,GFP_KERNEL);
+			llistar_nodes(llista,llista1);
+
+			while (llista1 != NULL) {
+		
+				printk(" readdir: Creem els directoris pels nodes\n");
+		
+				if(filldir(dirent, llista1->nom, strlen(llista1->nom), file->f_pos++, DIR_INODE_NUMBER, DT_DIR ))
+					return 0;
+				llista1 = llista1->next;
+			}
+    	
+			printk(" readdir: Directoris per nodes creats\n");
+    			kfree(llista);
+			kfree(llista1);
+		}
+		else {
+			printk (" readdir: No hi ha nodes a mostrar\n");
+			kfree(llista);
+		}
 	}
+	else printk (" readdir: No hi ha clusters amb nodes a mostrar\n");
+		
+    }
     
     else if(de->d_parent->d_parent->d_inode->i_ino == rkfs_root_inode->i_ino) // Estem a un node 
     {
@@ -327,49 +344,64 @@ int rkfs_f_readdir( struct file *file, void *dirent, filldir_t filldir ) {
 	
 	// Obtenim tots els clusters i busquem en quin estem
 	num = num_clusters();
-	llista = (struct cluster_t *)kmalloc(sizeof(struct cluster_t)*num ,GFP_KERNEL);	
-	llistar_clusters(llista);
-	
-	while (llista != NULL && i==0) {	
-		
-		printk(" readdir: Busquem el cluster\n");
-		
-		if (!strcmp(de->d_parent->d_name.name, llista->nom)) i=1;
-		else llista = llista->next;
-	} 
+	if (num>0) {
+		llista = (struct cluster_t *)kmalloc(sizeof(struct cluster_t)*num ,GFP_KERNEL);	
+		llistar_clusters(llista);
 
-	// Obtenim  tots els nodes del cluster i busquem en quin estem
-	i = 0; 
-	num = num_nodes(llista);	
-	llista1 = (struct node_t *)kmalloc(sizeof(struct node_t)*num ,GFP_KERNEL);
-	llistar_nodes(llista,llista1);
+		while (llista != NULL && i==0) {	
 
-	while (llista1 != NULL && i==0) {
-		
-		printk(" readdir: Busquem el node\n");
-		
-		if (!strcmp(de->d_name.name, llista1->nom)) i=1;
-		else llista1 = llista1->next;
+			printk(" readdir: Busquem el cluster\n");
+
+			if (!strcmp(de->d_parent->d_name.name, llista->nom)) i=1;
+			else llista = llista->next;
+		} 
+
+		// Obtenim  tots els nodes del cluster i busquem en quin estem
+		i = 0; 
+		num = num_nodes(llista);	
+		if (num>0) {
+			llista1 = (struct node_t *)kmalloc(sizeof(struct node_t)*num ,GFP_KERNEL);
+			llistar_nodes(llista,llista1);
+
+			while (llista1 != NULL && i==0) {
+
+				printk(" readdir: Busquem el node\n");
+
+				if (!strcmp(de->d_name.name, llista1->nom)) i=1;
+				else llista1 = llista1->next;
+			}
+
+
+			// LListem els processos del cluster
+			num = num_procs(llista,llista1);	
+			if (num>0) {
+				llista2 = (struct proces_t *)kmalloc(sizeof(struct proces_t)*num ,GFP_KERNEL);
+				llistar_procs(llista,llista1,llista2);
+
+				while (llista2 != NULL) {
+					if(filldir(dirent, llista2->nom, strlen(llista2->nom), file->f_pos++, FILE_INODE_NUMBER, DT_REG ))
+					return 0;
+					llista2 = llista2->next;
+				}
+				kfree (llista);
+				kfree (llista1);
+				kfree (llista2);
+				printk(" readdir: Fitxers per processos creats\n");
+			}
+			else {
+				printk(" readdir: No hi ha processos a mostrar\n");
+				kfree(llista);
+				kfree(llista1);
+			}
+		}
+		else {
+			printk(" readdir: No hi ha nodes amb processos a mostrar\n");
+			kfree(llista);
+		}
+    	}
+	else {
+		printk(" readdir: No hi ha clusters amb nodes amb processos a mostrar\n");
 	}
-    	
-	
-	// LListem els processos del cluster
-	num = num_procs(llista,llista1);	
-	llista2 = (struct proces_t *)kmalloc(sizeof(struct proces_t)*num ,GFP_KERNEL);
-	llistar_procs(llista,llista1,llista2);
-
-	while (llista2 != NULL) {
-		if(filldir(dirent, llista2->nom, strlen(llista2->nom), file->f_pos++, FILE_INODE_NUMBER, DT_REG ))
-			return 0;
-		llista2 = llista2->next;
-	}
-	
-	printk(" readdir: Fitxers per processos creats\n");
-    	
-	
-	kfree(llista);
-	kfree(llista1);
-	kfree(llista2);	
     }
     
     return 1;
