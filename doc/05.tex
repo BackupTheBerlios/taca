@@ -12,7 +12,7 @@ possible utilitzar des de dins el kernel.
 Més tard, explicarem que les altres dues opcions realment si que són possibles.
 
 A l'hora de crear la implementació, hem pensat en un objectiu molt concret per
-tal de reduïr el tamany de la implementació (doncs fer-la completa requereix
+tal de reduir el tamany de la implementació (doncs fer-la completa requereix
 molt de temps i no és l'objectiu d'aquesta pràctica).
 
 Ens hem fixat com a objectiu la migració de processos entre nodes perquè és el
@@ -31,7 +31,7 @@ següents parts.
 Aquest sistema de fitxers està basat en la interfície del VFS (\textit{Virtual
 File System}) que proporciona Linux.
 
-Al ser un sistema de fitxers virtual, tota la inforació mostrada es genera de
+Al ser un sistema de fitxers virtual, tota la informació mostrada es genera de
 forma dinàmica amb les dades obtingudes del \textit{backend}.
 
 Bàsicament, en iniciar-se el mòdul, es registra el nostre sistema de fitxers:
@@ -165,7 +165,7 @@ int proces_bloquejat (struct proces_t *proc);
 
 \subsubsection{Exemple \textit{dummy}}
 
-Primerament hem implementat un petit backend d'exemple que crea sempre les
+Primerament hem implementat un petit \textit{backend} d'exemple que crea sempre les
 mateixes dades per tal de comprovar que la part que hem implementat del
 \textit{frontend} funciona correctament, és a dir, tenim un sistema de fitxers
 navegable.
@@ -182,7 +182,7 @@ Bàsicament el problema és que OpenMosix ha estat pensat per a ser accedit sola i
 exclusivament a través de la interfície que ofereix al directori
 \verb"/proc/hpc", sense exportar cap símbol utilitzable des del propi nucli, de
 forma que l'única manera d'accedir-hi és a través del VFS, el qual només és
-accessible a través de programes amb un contexte propi (com serien programes en
+accessible a través de programes amb un context propi (com serien programes en
 mode usuari o threads de kernel).
 
 Aquest intent d'implementació es troba a \verb"backend/openmosix/".
@@ -212,10 +212,10 @@ de les funcions, dades i/o estructures que ens fessin falta del codi
 d'OpenMosix, o bé afegir una part de codi propi que utilitzi el que hi ha a dins
 d'OpenMosix i exportar aquestes funcions que ens proporcionarien just el que
 volem, que seria com una extensió del nostre \textit{backend} que entraria a
-dins del codi.
+dins del codi del kernel.
 \\
 A més a més aquestes dues últimes solucions no són molt viables pel fet de què la
-documentació tant externa com a dins del propi codi és molt minsa.
+documentació d'OpenMosix tant externa com a dins del propi codi és molt minsa.
 
 \item
 Una solució totalment circumstancial i depenent del binari seria la de conèixer

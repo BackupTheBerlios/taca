@@ -20,8 +20,8 @@ Quan la càrrega general excedeix les capacitats dels sistemes en el cluster, és
 possible afegir sistemes addicionals al mateix.  En l'actualitat, els clients
 que planegen ampliar la capacitat del seu sistema han de considerar servidors
 "high end" costosos que proporcionen espai per a CPUs, controladors i memòria
-addicionals. A l'utilitzar la tecnologia de clustering, els clients podran
-afegir gradualment sistemes estàndars més petits, segons sigui necessari, per a
+addicionals. Al utilitzar la tecnologia de clustering, els clients podran
+afegir gradualment sistemes estàndards més petits, segons sigui necessari, per a
 satisfer els requeriments generals de potència de processament.
 \end{description}
 
@@ -36,7 +36,7 @@ diferents paradigmes.
 
 \begin{itemize}
 \item \textbf{OpenMosix:}
-És una imlpementació basada en la distribució de processos, com a modificació
+És una implementació basada en la distribució de processos, com a modificació
 per al nucli, de forma que el procés és totalment transparent a l'usuari (al
 programador* de l'aplicació), cosa que fa molt més portables els programes a
 d'altres sistemes, utilitzin o no OpenMosix, i des d'aplicacions no dissenyades
@@ -65,14 +65,14 @@ comparteixen memòria.
 \nocite{Beowulf-Home}
 \nocite{Beowulf-Howto}
 Beowulf, segons una de les definicions que hem trobat (doncs alguns diuen que es
-pot dir que un sistema és Beowulf només si està contruït de la mateixa forma que
+pot dir que un sistema és Beowulf només si està construït de la mateixa forma que
 la màquina original de la NASA; d'altres van cap a l'altre extrem i diuen que és
 un sistema Beowulf tot aquell conjunt de màquines que corren codi paral·lel), és
-una arquitectura multi-computador que pot ser utilitzada per a fer computacoins
+una arquitectura multi-computador que pot ser utilitzada per a fer computacions
 en paral·lel. Normalment consisteix en un node servidor i un o més nodes
 connectats via Ethernet (o qualsevol altre xarxa), però el millor de tot és que
-es pot construïr amb hardware "normal", com per exemple qualsevol PC que pugui
-utilitzar Linux, adaptadors estàndar d'Ethernet i switchos. Beowulf també
+es pot construir amb hardware "normal", com per exemple qualsevol PC que pugui
+utilitzar Linux, adaptadors estàndard d'Ethernet i switchos. Beowulf també
 utilitza software "comú", com el sistema operatiu Linux, PVM (Parallel Virtual
 Machine) i MPI (Message Passing Interface). Una de les grans diferències entre
 Beowulf i un cluster de estacions de treball (COW - Cluster of Workstations) és
@@ -87,7 +87,7 @@ Linux per a formar un supercomputador paral·lel virtual. Tot i que hi ha varis
 paquets de software com modificacions per al kernel, llibreries PVM i MPI i
 eines de configuració que fan l'arquitectura Beowulf més ràpida, més fàcil de
 configurar i molt més usable, un pot construïr una màquina de la classe Beowulf
-utilitzant distribucions de Linux estàndars sense cap software addicional.
+utilitzant distribucions de Linux estàndards sense cap software addicional.
 Tenint un parell de màquines linux en xarxa que comparteixen com a mínim el
 /home a través de NFS i es confien l'una a l'altra per executar shells remotes
 (rsh), es podria dir que es té una màquina Beowulf molt simple de dos nodes.
@@ -97,10 +97,9 @@ Beowulf, ha d'haver estat escrita utilitzant llibreries o mètodes
 especialitzats, no transparents a l'usuari, però ofereix més rendiment que, per
 exemple, OpenMosix (tot i que aquest últim és totalment transparent a l'usuari).
 
-De totes maneres,
 
 
-\item \textbf{Altre soft de clustering:}
+\item \textbf{Altre software de clustering:}
 Tot i buscar per Internet la existència d'altre software de clustering, no hem trobat res excepte distribucions basades en el software que ja hem comentat.
 \end{itemize}
 
@@ -134,8 +133,8 @@ un afegit per dona suport per clustering.
 Utilitzant la bibloteca de processament carbonlib més un software de clustering
 anomenat pooch \cite{AltresSO-MacOS} es pot crear un cluster amb
 aquest sistema operatiu. Com passa a Beowulf per Linux, aquest sistema de
-clustering està basat en l'ús de biblioteques de paral.leliització i per tant
-els programes s'haurán d'escriure penssant que s'executen en un cluster no és
+clustering està basat en l'ús de biblioteques de paral·leliització i per tant
+els programes s'hauran d'escriure pensant que s'executen en un cluster no és
 transparent a l'usuari/aplicació.
 \end{itemize}
 
@@ -146,7 +145,7 @@ transparent a l'usuari/aplicació.
 \nocite{Hurd-Translators}
 Els translators són servidors de Hurd (SO basat en el micronucli gnuMach, tot i
 que s'està migrant cap a oskit-Mach i, en un futur, cap a L4) que proporcionen
-la interfícies bàsica del sistema de fitxers, de manera que es poden insertar
+la interfícies bàsica del sistema de fitxers, de manera que es poden inserir
 entre el contingut real d'un fitxer (entenent com a fitxer la representació
 corresponent en el sistema de fitxers - inode -, doncs el fitxer real pot estar
 en una altra màquina o, fins i tot, no ser cap fitxer, sinó la representació
@@ -165,7 +164,7 @@ Els translators són responsables de servir totes les operacions del sistema de
 fitxers que fan referència a l'inode al que s'uneix. Per això, al no estar
 restringits al típic conjunt d'objectes (fitxer de dispositiu, link, etc.), són
 lliures de retornar qualsevol cosa que tingui sentit per al programador.  Un
-exemple podria ser un translator que es comportés com un directori quan fós
+exemple podria ser un translator que es comportés com un directori quan fos
 accedit per \texttt{cd} o \texttt{ls} però que al mateix temps es comportés com
 un fitxer al ser accedit per \texttt{cat}.
 
@@ -181,14 +180,14 @@ A més /proc en podem dir que és un pseudo-sistema de fitxers, ja que en realitat
 cap dels fitxers o directoris que s'hi visualitzen existeixen realment.
 
 /proc és realment un mirall on s'hi veuen reflectides algunes de les
-esctructures del nucli del sistema operatiu, i per mitjà del qual podem
-controlar alguns paràmetres de seguretat tan fàcilment com resulta interectuar
+estructures del nucli del sistema operatiu, i per mitjà del qual podem
+controlar alguns paràmetres de seguretat tan fàcilment com resulta interactuar
 amb sistema de fitxers real.
 
 
 \subsubsection {Més sobre /proc}
 
-/proc está disponible en el sistema operatiu Linux quan el nucli es compila amb
+/proc està disponible en el sistema operatiu Linux quan el nucli es compila amb
 la opció CONFIG\_PROC\_FS=Y. També haurem de seleccionar la opció
 CONFIG\_SYSCTL=Y per a poder modificar el valor de determinats paràmetres.
 La majoria de distribucions inclouen nuclis compilats amb aquesta opció i en
@@ -234,7 +233,7 @@ documentació sobre treball en xarxa.
 No tots els paràmetres existents en /proc són modificables directament per
 l'usuari. De fet, la majoria són valors de només lectura i altres són molt
 millor controlar-los per mitjà del nucli amb la utilització de les divers
-funcions i eienes existents al sistema.
+funcions i eines existents al sistema.
 
 
 \subsubsection {Exemples de directoris}

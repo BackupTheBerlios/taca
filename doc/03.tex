@@ -13,40 +13,40 @@
 \item Quantitat de CPU's d'un node
 \item Consultar càrrega del node
 \item Consultar estat de memòria
-\item Bloquejar l'arribada de nous processos remots
-\item Bloquejar la migracio de processos locals
-\item Activar/Desactivar la migració automatica de processos
-\item Demanar que els processos que ha creat un node i han migrat, tornin  a
+\item Bloquejar l'arribada de nous procéssos remots
+\item Bloquejar la migració de procéssos locals
+\item Activar/Desactivar la migració automàtica de procéssos
+\item Demanar que els procéssos que ha creat un node i han migrat, tornin  a
 aquest node (come back home)
-\item Expulsar els "processos convidats" a casa
+\item Expulsar els "procéssos convidats" a casa
 \item Saber quin identificador te un node
 \item Modificar/Consultar la velocitat d'un node
-\item Consultar informacio de processos (resum de l'estat de processos locals, i
+\item Consultar informació de procéssos (resum de l'estat de procéssos locals, i
 remots)
 \item Consultar resum de l'estat del node
 \end{itemize}
 
-\subsection {A nivell de proces...}
+\subsection {A nivell de procés ...}
 \begin{itemize}
-\item Moure processos d'un node a un altre \\
-	=> Esborrar els fitxers relatius al proces del node origen \\
-	=> Generar els fitxers relatius al proces al node desti
-\item Bloquejar un proces en un node concret
-\item Crear un nou proces en una maquina (crear un fitxer) \\
-	=> Generar els fitxers relatius al proces en aquest node.
-\item Matar un proces (esborrar un fitxer) \\
-	=> Esborrar els fitxers relatius al proces al node on s'esta executant.
-\item Copiar un proces (arrencar una nova execució del programa)
-\item Modificar/veure memoria del proces
-\item Consultar la linia de comandes amb la que s'ha executat
-\item Consultar estat del proces
-\item Consultar quants cops s'ha migrat el proces
-\item Consultar on s'esta computant actualment
+\item Moure procéssos d'un node a un altre \\
+	=> Esborrar els fitxers relatius al procés del node origen \\
+	=> Generar els fitxers relatius al procés al node destí
+\item Bloquejar un procés en un node concret
+\item Crear un nou procés en una maquina (crear un fitxer) \\
+	=> Generar els fitxers relatius al procés en aquest node.
+\item Matar un procés (esborrar un fitxer) \\
+	=> Esborrar els fitxers relatius al procés al node on s'està executant.
+\item Copiar un procés (arrencar una nova execució del programa)
+\item Modificar/veure memòria del procés
+\item Consultar la línia de comandes amb la que s'ha executat
+\item Consultar estat del procés
+\item Consultar quants cops s'ha migrat el procés
+\item Consultar on s'està computant actualment
 \item Consultar quin node el va crear
-\item Saber l'identificador de proces (ID global)
-\item Saber l'identificador local d'un proces (ex: PID)
+\item Saber l'identificador de procés (ID global)
+\item Saber l'identificador local d'un procés (ex: PID)
 \item Consultar resum de us de CPU
-\item Consultar resum de us de Memoria
+\item Consultar resum de us de Memòria
 \end{itemize}
 
 
@@ -56,17 +56,17 @@ remots)
 
 \subsubsection{OpenMosix}
 
-El software que volem contruïr està lligat al node on s'executa per la definició
+El software que volem construir està lligat al node on s'executa per la definició
 de l'arquitectura d'OpenMosix, fem diferència entre node local i nodes remots.
 
 El node local és aquell on s'executa el nostre software (i davant del qual es
 troba l'usuari), la resta són els nodes remots.
 
-Per aquest motiu, suposarem que tots els processos tenen com a punt d'entrada
+Per aquest motiu, suposarem que tots els procéssos tenen com a punt d'entrada
 (s'inicia la seva execució) en el node local (que és la solució adoptada en la
 majoria dels centres on s'utilitza OpenMosix).
 
-Fem aquesta suposició precisament perquè els processos que tenen un node
+Fem aquesta suposició precisament perquè els procéssos que tenen un node
 \textit{home} (el node des d'on es llencen) diferent del node local ofereixen
 menys possibilitats d'administració i monitorització.
 
@@ -88,61 +88,61 @@ menys possibilitats d'administració i monitorització.
 	Consultant el fitxer /proc/hpc/nodes/\textless opMosix\_ID\textgreater/load
 \item Consultar estat de memoria \\
 	Consultant el fitxer /proc/hpc/nodes/\textless opMosix\_ID\textgreater/mem
-\item Bloquejar l'arribada de nous processos remots (tant el node local com els
+\item Bloquejar l'arribada de nous procéssos remots (tant el node local com els
 altres) \\
 	Consultant el fitxer /proc/hpc/admin/block
-\item Bloquejar la migracio de processos locals \\
+\item Bloquejar la migració de procéssos locals \\
 	Bloquejar cada procés del node (mirar següent secció)
-\item Activar/Desactivar la migració automatica de processos \\
+\item Activar/Desactivar la migració automàtica de procéssos \\
 	Modificar el fitxer /proc/hpc/admin/stay
-\item Demanar que els processos que ha creat un node i han migrat, tornin  a
+\item Demanar que els procéssos que ha creat un node i han migrat, tornin  a
 aquest node (come back home) \\
 	Modificar el fitxer /proc/hpc/admin/bring
-\item Expulsar els "processos convidats" a casa \\
+\item Expulsar els "procéssos convidats" a casa \\
 	Modificar el fitxer /proc/hpc/admin/expel
 \item Saber quin identificador té un node \\
 	Consultar el fitxer /proc/hpc/admin/mospe (o mirar el nom del directori del
 node)
 \item Modificar/Consultar la velocitat d'un node \\
 	Consultar el fitxer /proc/hpc/admin/speed
-\item Consultar informacio de processos (resum de l'estat de processos locals, i
+\item Consultar informació de procéssos (resum de l'estat de procéssos locals, i
 remots) \\
 	Generar un resum consultant la informació de cada procés del node amb les
-operacions de consulta de informació de proces (mirar següent secció)
+operacions de consulta de informació de procés (mirar següent secció)
 \item Consultar resum de l'estat del node \\
 	Generar un resum amb la informació sobre el node descrita a les funcionalitats
 anteriors.
 \end{itemize}
 
-\item A nivell de proces...
+\item A nivell de procés...
 \begin{itemize}
-\item Moure processos d'un node a un altre \\
-	Fer un \textit{migrate} del proces que volem moure al node on ha d'anar
-\item Bloquejar un proces en un node concret \\
+\item Moure procéssos d'un node a un altre \\
+	Fer un \textit{migrate} del procés que volem moure al node on ha d'anar
+\item Bloquejar un procés en un node concret \\
 	Modificar el fitxer /proc/\textless PID\textgreater/lock
-\item Crear un nou proces en una maquina (crear un fitxer) \\
-	Posar en execucio el proces al node on volem que s'executi
-\item Matar un proces (esborrar un fitxer) \\
-	Fer un "kill" del proces
-\item Copiar un proces (arrencar una nova execució del programa) \\
+\item Crear un nou procés en una maquina (crear un fitxer) \\
+	Posar en execució el procés al node on volem que s'executi
+\item Matar un procés (esborrar un fitxer) \\
+	Fer un "kill" del procés
+\item Copiar un procés (arrencar una nova execució del programa) \\
 	Això no és ofert directament per OpenMosix, sinó que es tracta
 	simplement de tornar a executar el programa
-\item Modificar/veure memoria del proces \\
+\item Modificar/veure memòria del procés \\
 	Consultar el fitxer /proc/\textless PID\textgreater/mem
-\item Consultar la linia de comandes amb la que s'ha executat \\
+\item Consultar la línia de comandes amb la que s'ha executat \\
 	Consultar el fitxer /proc/\textless PID\textgreater/cmdline
-\item Consultar estat del proces \\
+\item Consultar estat del procés \\
 	Consultar el fitxer /proc/\textless PID\textgreater/status
-\item Consultar quants cops s'ha migrat el proces \\
+\item Consultar quants cops s'ha migrat el procés \\
 	Consultar el fitxer /proc/\textless PID\textgreater/nmigs
-\item Consultar on s'esta computant actualment \\
+\item Consultar on s'està computant actualment \\
 	Consultar el fitxer /proc/\textless PID\textgreater/where (o mirar el directori pare)
-\item Consultar quin node va crear el proces \\
+\item Consultar quin node va crear el procés \\
 	Segons la suposició inicial, tots es creen al node local
-\item Saber l'identificador de proces (ID global) \\
+\item Saber l'identificador de procés (ID global) \\
 	El propi \textit{PID} ens serveix d'ID global perquè el propi OpenMosix
 	ja s'encarrega de mantenir la coherència
-\item Saber l'identificador local d'un proces \\
+\item Saber l'identificador local d'un procés \\
 	En OpenMosix tots els identificadors dels processos migrables són
 	globals, de forma que ja són els mateixos que els locals (es troben a
 	/proc/\textless PID\textgreater)
@@ -159,7 +159,7 @@ anteriors.
 \nocite{Beowulf-MiniHowto}
 Tal com s'ha explicat anteriorment, Beowulf és una arquitectura i no un paquet
 de software, de manera que hi ha diverses eines o distribucions que permeten
-contruïr aquesta arquitectura:
+construir aquesta arquitectura:
 
 \begin{itemize}
 \item Cluster Management Utility (CMU) de Compaq

@@ -11,8 +11,8 @@ sobre aquest software de clustering.
 En aquest disseny es tracta d'utilitzar des del mòdul TACA les comandes que
 ofereix el software de clustering.
 
-Per exemple, quan es vol migrar un proces, es a dir, es vol moure un fitxer que
-representa el proces en el sistema de fitxers que ofereix TACA, d'un node a un
+Per exemple, quan es vol migrar un procés, es a dir, es vol moure un fitxer que
+representa el procés en el sistema de fitxers que ofereix TACA, d'un node a un
 altre, el que faria el software del nostre mòdul seria utilitzar la comanda
 "migrate" de les \textit{OpenMosix Tools} (utilitats de clustering).
 
@@ -38,7 +38,7 @@ les OpenMosix Tools.
 
 Aquest disseny, respecte l'anterior, aporta independència respecte les OpenMosix
 Tools i eficiència ja que no cal que cada cop que volem fer alguna operació
-haguem de crear un procés que executi una comanda de les utilitats de
+hagim de crear un procés que executi una comanda de les utilitats de
 clustering.
 
 Per contra implica entendre les utilitats d'OpenMosix i realitzar una
@@ -120,15 +120,15 @@ Entendrem com a '/' (arrel) l'inici de la nostra jerarquia d'administració.
         |-- admin
         |   |-- ncpu		Numero de CPUs al node
         |   |-- load		Carrega del node
-        |   |-- mem		Estat de la memoria
+        |   |-- mem		Estat de la memòria
         |   |-- block_new	Bloqueja l'arribada de processos nous
         |   |-- block_mig	Bloqueja la migració de processos locals
-        |   |-- auto_mig	Bloqueja la migracio automatica de processos
+        |   |-- auto_mig	Bloqueja la migració automàtica de processos
         |   |-- come_home	Fa que els processos que ha llençat aquest node tornin
         |   |-- go_home		Expulsar els processos convidats
         |   |-- speed		Velocitat del node
         |   `-- status		Estat del node i dels processos
-        `-- <IDProces>
+        `-- <IDprocés>
             |-- block           Bloqueja el procés en el node actual
             |-- mem		Memòria del procés
             |-- cmdline		Línia de comandes amb la que s'ha arrencat el programa
