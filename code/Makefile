@@ -5,6 +5,7 @@ include Rules.conf
 # global flags definitions
 CFLAGS  += -Wall -O2 \
 	   -D__KERNEL__ -DMODULE \
+	   -inostdinc \
 	   -I$(TOPDIR)/backend
 
 #LDFLAGS += 
