@@ -33,7 +33,7 @@ int llistar_nodes (struct cluster_t *cluster_id, struct node_t *llista)
 	//llista[0] = &n1;
 	//llista[1] = &n2;
 	//llista[2] = &n3;
-	
+	return 0;
 }
 
 int liistar_procs (struct node_t *node_id, struct proces_t *llista)
@@ -41,6 +41,7 @@ int liistar_procs (struct node_t *node_id, struct proces_t *llista)
 	//llista[0] = &p1;
 	//llista[1] = &p2;
 	//llista[2] = &p3;
+	return 0;
 }
 
 

@@ -1,6 +1,6 @@
 
 %.o:
-	make -C $* $@
+	make -C $* all
 
 clean:
 	$(foreach dir,$(shell find . -type d -maxdepth 1 -mindepth 1 | grep -v CVS),make -C $(dir) clean)

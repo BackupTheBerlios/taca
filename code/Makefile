@@ -13,14 +13,12 @@ TOPDIR = $(shell /bin/pwd)
 
 export CFLAGS TOPDIR # LDFLAGS
 
-all: $(TARGET)
-
-$(TARGET):
+all:
 	make -C frontend $(FRONTEND)
 	make -C backend $(BACKEND)
 	$(LD) -r -o $(TARGET) frontend.o backend.o
 
-re-$(TARGET): clean $(TARGET)
+re-all: clean all
 
 run: $(TARGET)
 	insmod $(TARGET)
